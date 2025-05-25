@@ -1,0 +1,302 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Основное тело */
+  body, html {
+    height: 100%;
+    /* margin: 0; */
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    background-color: #f9fafb;
+    color: #111827;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  .flex {
+    display: flex;
+  }
+  .flex-col {
+    flex-direction: column;
+}
+
+.min-h-screen {
+    min-height: 100vh; /* Задает минимальную высоту контейнера */
+}
+
+.flex-1 {
+    flex: 1; /* Позволяет основному контенту занимать оставшееся пространство */
+}
+
+
+
+.header {
+    background-color: #7d7e80; /* Цвет фона для заголовка */
+    padding: 20px; /* Отступы для заголовка */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+  /* .header {
+    background: linear-gradient(to right, #65656f, #55575b);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  } */
+  
+  .header a {
+    text-decoration: none;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    transition: color 0.2s;
+  }
+  
+  .header a:hover {
+    color: #e5e7eb; /* Светло-серый цвет при наведении */
+  }
+  
+  .logout-button {
+    background-color: #169c1b; /* Красный цвет */
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .logout-button:hover {
+    background-color: #dc2626; /* Темно-красный цвет при наведении */
+  }
+
+  .archive-button{
+    margin-right: 5px;
+    padding: 8px 16px;
+  }
+  
+  .footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+}
+  
+  .main {
+    flex-grow: 1;
+    padding: 16px;
+    /* margin-top: 64px; */
+  }
+
+  .margin {
+    margin: 5px;
+  }
+
+  .margin-bottom {
+    margin-bottom: 5px;
+  }
+  
+  /* Центрирование страниц входа/регистрации */
+  .page-center {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  
+  .container {
+    max-width: 400px;
+    width: 100%;
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Инпуты */
+  .input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    background-color: #fff;
+    transition: border-color 0.2s;
+  }
+  
+  .input:focus {
+    border-color: #3b82f6;
+    outline: none;
+  }
+  
+  /* Кнопки */
+  .btn {
+    width: 100%;
+    background-color: #3b82f6;
+    color: #fff;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .btn:hover {
+    background-color: #2563eb;
+  }
+  
+  /* Интерактивные карточки для групп */
+  .group-card {
+    display: inline-block;
+    padding: 0.35rem 1.25rem;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: .5rem;
+    text-align: center;
+    font-weight: 500;
+    color: #3b82f6;
+    text-decoration: none;
+    transition: background-color 0.2s, border-color 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  
+  .group-card:hover {
+    background-color: #f0f9ff;
+    border-color: #3b82f6;
+  }
+
+  /* Стили для кнопок */
+button {
+    background-color: #007bff; /* Цвет фона кнопок */
+    color: white; /* Цвет текста */
+    padding: 10px 15px; /* Отступы */
+    border: none; /* Убираем границу */
+    border-radius: 5px; /* Закругление углов */
+    cursor: pointer; /* Указатель при наведении */
+    transition: background-color 0.3s; /* Плавный переход цвета фона */
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #0056b3; /* Цвет фона при наведении */
+}
+
+/* Стили для кнопки "Назад" */
+.back-button {
+    background-color: rgb(244, 244, 244); /* Прозрачный фон */
+    color: #007bff; /* Цвет текста */
+    padding: 10px 15px; /* Отступы */
+    border: none; /* Убираем границу */
+    cursor: pointer; /* Указатель при наведении */
+    text-decoration: none;
+    margin-top: 20px; /* Отступ сверху, чтобы избежать наезжания на другие элементы */
+    display: inline-block; /* Убедитесь, что кнопка отображается как блочный элемент */
+}
+  
+  /* Выпадающий список */
+  /* .select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    background-color: #ffffff;
+    font-size: 1rem;
+    appearance: none;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjY2NjIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSI3Ij48cGF0aCBkPSJNMiAwbDYgNiA2LTYiLz48L3N2Zz4=');
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1rem;
+  } */
+
+  .select {
+    width: auto;
+    margin: 5px;
+    min-width: 120px;
+    padding: 0.4rem 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    background-color: #ffffff;
+    font-size: 0.95rem;
+    appearance: none;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjY2NjIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSI3Ij48cGF0aCBkPSJNMiAwbDYgNiA2LTYiLz48L3N2Zz4=');
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 0.75rem;
+  }
+  
+  /* .select:focus {
+    border-color: #3b82f6;
+    outline: none;
+  } */
+
+  .select:focus {
+    border-color: #3b82f6;
+    outline: none;
+  }
+  
+  /* Таблица студентов */
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  
+  .table th, .table td {
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    text-align: left;
+    font-size: 0.95rem;
+  }
+  
+  .table th {
+    background-color: #f3f4f6;
+    font-weight: 600;
+  }
+
+  .input-small {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.9rem;
+    width: 100%;
+    min-width: 60px;
+  }
+  
+  /* Адаптивность */
+  @media (max-width: 640px) {
+
+    .main {
+        padding: 10px; /* Уменьшение отступов для мобильных устройств */
+    }
+
+    .flex {
+        display: flex;
+        flex-direction: column;
+      }
+
+    .footer {
+        font-size: 14px; /* Уменьшение размера шрифта футера для мобильных устройств */
+    }
+
+    .container {
+      padding: 1.5rem;
+    }
+
+    .table th, .table td {
+      padding: 0.5rem;
+      font-size: 0.85rem;
+    }
+  }
+  
