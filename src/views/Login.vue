@@ -32,7 +32,7 @@ const password = ref('');
 const login = async () => {
   console.log('[LOGIN] POST /api/auth/login', email.value);
 
-  const res = await fetch('https://backend.onrender.com/api/auth/login', {
+  const res = await fetch('https://backend-8qud.onrender.com/api/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: email.value, password: password.value }),
