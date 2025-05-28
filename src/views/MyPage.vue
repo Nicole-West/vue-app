@@ -105,7 +105,7 @@ export default {
       this.userName = decoded.name;
 
 
-      const res = await axios.get('/api/dashboard', {
+      const res = await axios.get('https://backend-8qud.onrender.com/api/dashboard', {
         headers: {
           Authorization: `Bearer ${token}`
         }
