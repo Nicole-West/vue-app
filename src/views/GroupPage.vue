@@ -104,7 +104,7 @@ export default {
       const decoded = decodeToken(token);
       this.userId = decoded.user_id;
 
-      const { data: subjectsData } = await axios.get(`http://localhost:3000/api/group/${this.groupId}/subjects/${this.userId}`, {
+      const { data: subjectsData } = await axios.get(`/api/group/${this.groupId}/subjects/${this.userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -131,7 +131,7 @@ export default {
       }
 
       try {
-        const { data } = await axios.get(`http://localhost:3000/api/group/${this.groupId}/subject/${this.selectedSubject}/grades`, {
+        const { data } = await axios.get(`/api/group/${this.groupId}/subject/${this.selectedSubject}/grades`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -178,7 +178,7 @@ export default {
           return;
         }
 
-        await axios.post(`http://localhost:3000/api/group/${this.groupId}/subject/${this.selectedSubject}/grades`,
+        await axios.post(`/api/group/${this.groupId}/subject/${this.selectedSubject}/grades`,
           {
             grades: changedGrades,
             editor_id: this.userId // Добавляем ID пользователя

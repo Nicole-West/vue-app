@@ -13,6 +13,7 @@ import ApprovePage from './views/ApproveUsers.vue';
 import PromotePage from './views/Promote.vue';
 import NextMonth from './views/NextMonth.vue';
 import NextSemester from './views/NextSemester.vue';
+import StatsView from './views/StatsView.vue';
 
 
 const routes = [
@@ -23,6 +24,7 @@ const routes = [
   { path: '/group/:id', component: GroupPage, props: true },
   { path: '/group/:id/subjects/:subjectId', component: GroupPage, props: true },
   { path: '/group/:id/subjects', component: GroupPage, props: true },
+  { path: '/stats', component: StatsView, props: true },
 
   { path: '/archive', component: Archive },
 

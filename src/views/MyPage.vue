@@ -8,6 +8,11 @@ Code
         <button @click="archive" class="archive-button">
           Архив
         </button>
+
+        <button v-if="userRole === 'senior_teacher'" @click="stats" class="archive-button">
+          Статистика
+        </button>
+
         <button @click="logout" class="logout-button">
           Выйти
         </button>
@@ -22,10 +27,14 @@ Code
           <!-- <h2 class=" margin-bottom text-2xl font-bold mb-4">Добро пожаловать!</h2> -->
         </div>
         <div class="mb-4">
+
+
           <p><strong>Учебный год:</strong> {{ dashboard.year.year }}</p>
           <p><strong>Семестр:</strong> {{ dashboard.semester.semester_number }}</p>
           <p><strong>Месяц:</strong> {{ dashboard.month.month }} <span
               v-if="dashboard.month.is_attestation_month">(Аттестация)</span></p>
+
+
         </div>
 
         <div v-for="(groups, courseName) in dashboard.groupsByCourse" :key="courseName" class="mb-6">
@@ -59,14 +68,22 @@ import router from '../router';
 export default {
   data() {
     return {
-      dashboard: null,
-      userName: ''
+      // dashboard: null,
+      dashboard: {
+        year: {},
+        semester: {},
+        month: {},
+        groupsByCourse: {}
+      },
+      userName: '',
+      userRole: '' // Добавляем поле для роли
     };
   },
   async mounted() {
     const token = localStorage.getItem('token');
     const decoded = decodeToken(token);
     this.userName = decoded.name;
+    this.userRole = decoded.role;
 
     if (!token) {
       router.push('/');  // Если токен отсутствует, перенаправляем на страницу входа
@@ -85,6 +102,7 @@ export default {
       }
 
       this.userName = decoded.name;
+
 
       const res = await axios.get('/api/dashboard', {
         headers: {
@@ -116,9 +134,14 @@ export default {
     // }
   },
   methods: {
+    stats() {
+      router.push('/stats');
+    },
     logout() {
       localStorage.removeItem('token');
       localStorage.removeItem('name');
+      localStorage.removeItem('role');
+      localStorage.removeItem('userId');
       router.push('/login');
     },
     archive() {
