@@ -29,10 +29,17 @@ Code
         <div class="mb-4">
 
 
-          <p><strong>Учебный год:</strong> {{ dashboard.year.year }}</p>
+          <!-- <p><strong>Учебный год:</strong> {{ dashboard.year.year }}</p>
           <p><strong>Семестр:</strong> {{ dashboard.semester.semester_number }}</p>
           <p><strong>Месяц:</strong> {{ dashboard.month.month }} <span
-              v-if="dashboard.month.is_attestation_month">(Аттестация)</span></p>
+              v-if="dashboard.month.is_attestation_month">(Аттестация)</span></p> -->
+
+          <p v-if="dashboard?.year"><strong>Учебный год:</strong> {{ dashboard.year.year }}</p>
+          <p v-if="dashboard?.semester"><strong>Семестр:</strong> {{ dashboard.semester.semester_number }}</p>
+          <p v-if="dashboard?.month">
+            <strong>Месяц:</strong> {{ dashboard.month.month }}
+            <span v-if="dashboard.month.is_attestation_month">(Аттестация)</span>
+          </p>
 
 
         </div>
@@ -68,13 +75,7 @@ import router from '../router';
 export default {
   data() {
     return {
-      // dashboard: null,
-      dashboard: {
-        year: {},
-        semester: {},
-        month: {},
-        groupsByCourse: {}
-      },
+      dashboard: null,
       userName: '',
       userRole: '' // Добавляем поле для роли
     };
