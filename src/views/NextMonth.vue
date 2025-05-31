@@ -44,7 +44,8 @@ export default {
     },
     async mounted() {
         try {
-            const res = await axios.get('http://localhost:3000/api/month/current-month');
+            const res = await axios.get('https://backend-8qud.onrender.com/api/month/current-month');
+            // const res = await axios.get('http://localhost:3000/api/month/current-month');
             this.currentMonth = res.data.month;
             this.currentYear = res.data.year;
         } catch (err) {
@@ -57,7 +58,8 @@ export default {
             this.statusMessage = '';
             this.errorMessage = '';
             try {
-                const response = await axios.post('http://localhost:3000/api/month/next-month');
+                const response = await axios.post('https://backend-8qud.onrender.com/api/month/next-month');
+                // const response = await axios.post('http://localhost:3000/api/month/next-month');
                 // const data = await response.json();
                 console.log(response.data);
 
