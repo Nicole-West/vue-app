@@ -34,12 +34,12 @@ Code
           <p><strong>Месяц:</strong> {{ dashboard.month.month }} <span
               v-if="dashboard.month.is_attestation_month">(Аттестация)</span></p> -->
 
-          <p v-if="dashboard?.year"><strong>Учебный год:</strong> {{ dashboard.year.year }}</p>
-          <p v-if="dashboard?.semester"><strong>Семестр:</strong> {{ dashboard.semester.semester_number }}</p>
-          <p v-if="dashboard?.month">
-            <strong>Месяц:</strong> {{ dashboard.month.month }}
-            <span v-if="dashboard.month.is_attestation_month">(Аттестация)</span>
-          </p>
+<p v-if="dashboard?.year"><strong>Учебный год:</strong> {{ dashboard.year.year }}</p>
+<p v-if="dashboard?.semester"><strong>Семестр:</strong> {{ dashboard.semester.semester_number }}</p>
+<p v-if="dashboard?.month">
+  <strong>Месяц:</strong> {{ dashboard.month.month }}
+  <span v-if="dashboard.month.is_attestation_month">(Аттестация)</span>
+</p>
 
 
         </div>
