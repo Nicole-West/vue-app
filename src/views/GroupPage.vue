@@ -105,6 +105,7 @@ export default {
       this.userId = decoded.user_id;
 
       const { data: subjectsData } = await axios.get(`/api/group/${this.groupId}/subjects/${this.userId}`, {
+        // const { data: subjectsData } = await axios.get(`http://localhost:3000/api/group/${this.groupId}/subjects/${this.userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -131,7 +132,8 @@ export default {
       }
 
       try {
-        const { data } = await axios.get(`/api/group/${this.groupId}/subject/${this.selectedSubject}/grades`, {
+        const { data } = await axios.get(`https://backend-8qud.onrender.com/api/group/${this.groupId}/subject/${this.selectedSubject}/grades`, {
+          // const { data } = await axios.get(`http://localhost:3000/api/group/${this.groupId}/subject/${this.selectedSubject}/grades`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -177,8 +179,8 @@ export default {
           alert('Нет изменений для сохранения!');
           return;
         }
-
-        await axios.post(`/api/group/${this.groupId}/subject/${this.selectedSubject}/grades`,
+        await axios.post(`https://backend-8qud.onrender.com/api/group/${this.groupId}/subject/${this.selectedSubject}/grades`,
+          // await axios.post(`http://localhost:3000/api/group/${this.groupId}/subject/${this.selectedSubject}/grades`,
           {
             grades: changedGrades,
             editor_id: this.userId // Добавляем ID пользователя

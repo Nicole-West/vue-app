@@ -164,7 +164,8 @@ export default {
         async fetchFilterOptions() {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get('/api/archive/filters', {
+                const response = await axios.get('https://backend-8qud.onrender.com/api/archive/filters', {
+                    // const response = await axios.get('/api/archive/filters', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -187,7 +188,8 @@ export default {
                     ...Object.fromEntries(Object.entries(this.filters).filter(([_, v]) => v !== ''))
                 };
 
-                const response = await axios.get('/api/archive/data', {
+                const response = await axios.get('https://backend-8qud.onrender.com/api/archive/data', {
+                    // const response = await axios.get('/api/archive/data', {
                     headers: { Authorization: `Bearer ${token}` },
                     params
                 });

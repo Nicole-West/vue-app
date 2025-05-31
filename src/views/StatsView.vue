@@ -3,13 +3,12 @@
         <main class="main flex-1 p-4">
             <h1 class="text-2xl font-bold mb-6">Статистика текущей аттестации</h1>
 
-            <!-- 1. Общее количество неаттестаций -->
+            <!-- Существующая статистика -->
             <div class="stats-card mb-6">
                 <h2 class="text-xl font-semibold mb-4">Неаттестации (пропуски)</h2>
                 <p class="text-lg">Всего: <span class="font-bold">{{ statsData?.total_failed || 0 }}</span></p>
             </div>
 
-            <!-- 2. Студенты с 3+ нулями -->
             <div class="stats-card mb-6">
                 <h2 class="text-xl font-semibold mb-4">Студенты с 3+ нулевыми оценками</h2>
                 <div v-if="statsData?.students_with_3plus_zeros?.length">
@@ -21,8 +20,7 @@
                 <p v-else>Нет студентов с 3+ нулевыми оценками</p>
             </div>
 
-            <!-- 3. Неаттестации по группам и предметам -->
-            <div class="stats-card">
+            <div class="stats-card mb-6">
                 <h2 class="text-xl font-semibold mb-4">Неаттестации по группам и предметам</h2>
                 <div v-if="statsData?.failed_by_group_subject?.length">
                     <div v-for="item in statsData.failed_by_group_subject"
@@ -32,6 +30,73 @@
                     </div>
                 </div>
                 <p v-else>Нет неаттестаций</p>
+            </div>
+
+            <!-- Новый блок для экспорта -->
+            <!-- <div class="stats-card">
+                <h2 class="text-xl font-semibold mb-4">Экспорт оценок в Excel</h2>
+                <div class="flex flex-col md:flex-row gap-4 mb-4">
+                    <div class="flex-1">
+                        <label class="block mb-2">Группа:</label>
+                        <select v-model="exportData.group_id" class="w-full p-2 border rounded">
+                            <option value="">Выберите группу</option>
+                            <option v-for="group in groups" :key="group.group_id" :value="group.group_id">
+                                {{ group.group_number }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block mb-2">Предмет:</label>
+                        <select v-model="exportData.subject_id" :disabled="!exportData.group_id"
+                            class="w-full p-2 border rounded">
+                            <option value="">Выберите предмет</option>
+                            <option v-for="subject in subjects" :key="subject.subject_id" :value="subject.subject_id">
+                                {{ subject.subject_name }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button @click="exportExcel" :disabled="!exportData.group_id || !exportData.subject_id"
+                            class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:bg-gray-400">
+                            Экспорт
+                        </button>
+                    </div>
+                </div>
+            </div> -->
+
+            <div class="stats-card">
+                <h2 class="text-xl font-semibold mb-4">Экспорт оценок в Excel</h2>
+                <div class="flex flex-col md:flex-row gap-4 mb-4">
+                    <div class="flex-1">
+                        <label class="block mb-2">Группа:</label>
+                        <select v-model="exportData.group_id" @change="loadGroupSubjects"
+                            class="w-full p-2 border rounded">
+                            <option value="">Выберите группу</option>
+                            <option v-for="group in groups" :key="group.group_id" :value="group.group_id">
+                                {{ group.group_number }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block mb-2">Предмет:</label>
+                        <select v-model="exportData.subject_id" :disabled="!exportData.group_id || groupSubjectsLoading"
+                            class="w-full p-2 border rounded">
+                            <option value="">Выберите предмет</option>
+                            <option v-for="subject in groupSubjects" :key="subject.subject_id"
+                                :value="subject.subject_id">
+                                {{ subject.subject_name }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button @click="exportExcel"
+                            :disabled="!exportData.group_id || !exportData.subject_id || exportLoading"
+                            class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:bg-gray-400">
+                            <span v-if="exportLoading">Генерация...</span>
+                            <span v-else>Экспорт</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -44,22 +109,67 @@ import router from '../router';
 export default {
     data() {
         return {
-            statsData: null
+            statsData: null,
+            groups: [],
+            subjects: [],
+            exportData: {
+                group_id: '',
+                subject_id: ''
+            },
+            groupSubjects: [],
+            groupSubjectsLoading: false,
+            exportLoading: false
+
         };
     },
     async mounted() {
         await this.loadStats();
+        // await this.loadGroups();
+        // await this.loadSubjects();
     },
     methods: {
+        // async loadStats() {
+        //     try {
+        //         const token = localStorage.getItem('token');
+        //         // const res = await axios.get('/api/stats/current-zeros', {
+        //         const res = await axios.get('http://localhost:3000/api/stats/current-zeros', {
+        //             headers: { Authorization: `Bearer ${token}` }
+        //         });
+        //         this.statsData = res.data;
+        //     } catch (err) {
+        //         console.error('Ошибка загрузки статистики:', err);
+        //         if (err.response?.status === 401) {
+        //             localStorage.removeItem('token');
+        //             router.push('/login');
+        //         }
+        //     }
+        // },
         async loadStats() {
             try {
                 const token = localStorage.getItem('token');
-                const res = await axios.get('/api/stats/current-zeros', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                this.statsData = res.data;
+
+                // Параллельные запросы
+                const [statsRes, groupsRes, subjectsRes] = await Promise.all([
+                    axios.get('https://backend-8qud.onrender.com/api/stats/current-zeros', {
+                        // axios.get('http://localhost:3000/api/stats/current-zeros', {
+                        headers: { Authorization: `Bearer ${token}` }
+                    }),
+                    axios.get('https://backend-8qud.onrender.com/api/stats/groups', {
+                        // axios.get('http://localhost:3000/api/stats/groups', {
+                        headers: { Authorization: `Bearer ${token}` }
+                    }),
+                    axios.get('https://backend-8qud.onrender.com/api/stats/subjects', {
+                        // axios.get('http://localhost:3000/api/stats/subjects', {
+                        headers: { Authorization: `Bearer ${token}` }
+                    })
+                ]);
+
+                this.statsData = statsRes.data;
+                this.groups = groupsRes.data;
+                this.subjects = subjectsRes.data;
+
             } catch (err) {
-                console.error('Ошибка загрузки статистики:', err);
+                console.error('Ошибка загрузки данных:', err);
                 if (err.response?.status === 401) {
                     localStorage.removeItem('token');
                     router.push('/login');
@@ -72,6 +182,70 @@ export default {
         },
         archive() {
             router.push('/archive');
+        },
+        async loadGroupSubjects() {
+            if (!this.exportData.group_id) {
+                this.groupSubjects = [];
+                this.exportData.subject_id = '';
+                return;
+            }
+
+            this.groupSubjectsLoading = true;
+            this.exportData.subject_id = '';
+
+            try {
+                const token = localStorage.getItem('token');
+                const res = await axios.get(
+                    `https://backend-8qud.onrender.com/api/stats/group-subjects?group_id=${this.exportData.group_id}`,
+                    // `http://localhost:3000/api/stats/group-subjects?group_id=${this.exportData.group_id}`,
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+                this.groupSubjects = res.data;
+            } catch (err) {
+                console.error('Ошибка загрузки предметов группы:', err);
+                this.groupSubjects = [];
+            } finally {
+                this.groupSubjectsLoading = false;
+            }
+        },
+
+        async exportExcel() {
+            if (!this.exportData.group_id || !this.exportData.subject_id) return;
+
+            this.exportLoading = true;
+
+            try {
+                const token = localStorage.getItem('token');
+                const params = new URLSearchParams({
+                    group_id: this.exportData.group_id,
+                    subject_id: this.exportData.subject_id
+                });
+
+                const response = await axios.get(
+                    `https://backend-8qud.onrender.com/api/stats/export-grades?${params.toString()}`,
+                    // `http://localhost:3000/api/stats/export-grades?${params.toString()}`,
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                        responseType: 'blob'
+                    }
+                );
+
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute(
+                    'download',
+                    `grades_${this.exportData.group_id}_${this.exportData.subject_id}.xlsx`
+                );
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            } catch (err) {
+                console.error('Ошибка экспорта:', err);
+                alert('Ошибка при экспорте данных');
+            } finally {
+                this.exportLoading = false;
+            }
         }
     }
 };
