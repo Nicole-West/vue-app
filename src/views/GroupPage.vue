@@ -104,7 +104,7 @@ export default {
       const decoded = decodeToken(token);
       this.userId = decoded.user_id;
 
-      const { data: subjectsData } = await axios.get(`/api/group/${this.groupId}/subjects/${this.userId}`, {
+      const { data: subjectsData } = await axios.get(`https://backend-8qud.onrender.com/api/group/${this.groupId}/subjects/${this.userId}`, {
         // const { data: subjectsData } = await axios.get(`http://localhost:3000/api/group/${this.groupId}/subjects/${this.userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
