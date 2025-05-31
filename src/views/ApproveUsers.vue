@@ -70,7 +70,8 @@ export default {
         }
 
         try {
-            const res = await axios.get('http://localhost:3000/api/admin/unapproved-users', {
+            const res = await axios.get('https://backend-8qud.onrender.com/api/admin/unapproved-users', {
+                // const res = await axios.get('http://localhost:3000/api/admin/unapproved-users', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -84,7 +85,8 @@ export default {
         async approveUser(user, index) {
             const token = localStorage.getItem('token');
             try {
-                await axios.put(`http://localhost:3000/api/admin/approve-user/${user.user_id}`, user, {
+                await axios.put(`https://backend-8qud.onrender.com/api/admin/approve-user/${user.user_id}`, user, {
+                    // await axios.put(`http://localhost:3000/api/admin/approve-user/${user.user_id}`, user, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
