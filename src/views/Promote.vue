@@ -369,7 +369,8 @@ export default {
             try {
                 const token = localStorage.getItem('token');
 
-                const response = await axios.get('http://localhost:3000/api/academic-year/transition-info', {
+                const response = await axios.get('https://backend-8qud.onrender.com/api/academic-year/transition-info', {
+                    // const response = await axios.get('http://localhost:3000/api/academic-year/transition-info', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 console.log(response);
@@ -417,7 +418,8 @@ export default {
             try {
                 const token = localStorage.getItem('token');
                 const response = await axios.get(
-                    `http://localhost:3000/api/academic-year/graduating-students/${this.currentYearId}`,
+                    `https://backend-8qud.onrender.com/api/academic-year/graduating-students/${this.currentYearId}`,
+                    // `http://localhost:3000/api/academic-year/graduating-students/${this.currentYearId}`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
@@ -454,7 +456,9 @@ export default {
                     .map(s => s.student_id);
 
                 const response = await axios.post(
-                    'http://localhost:3000/api/academic-year/process-transition',
+
+                    'https://backend-8qud.onrender.com/api/academic-year/process-transition',
+                    // 'http://localhost:3000/api/academic-year/process-transition',
                     {
                         currentYearId: this.currentYearId,
                         nextYear: this.nextYear,
@@ -485,7 +489,8 @@ export default {
             try {
                 const token = localStorage.getItem('token');
                 const response = await axios.get(
-                    `http://localhost:3000/api/academic-year/students/academic-leaves/${this.currentYearId}`,
+                    `https://backend-8qud.onrender.com/api/academic-year/students/academic-leaves/${this.currentYearId}`,
+                    // `http://localhost:3000/api/academic-year/students/academic-leaves/${this.currentYearId}`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
@@ -511,7 +516,8 @@ export default {
             try {
                 const token = localStorage.getItem('token');
                 const response = await axios.post(
-                    'http://localhost:3000/api/academic-year/students/process-academic-leaves',
+                    'https://backend-8qud.onrender.com/api/academic-year/students/process-academic-leaves',
+                    // 'http://localhost:3000/api/academic-year/students/process-academic-leaves',
                     {
                         yearId: this.currentYearId,
                         decisions: this.academicLeaveStudents.map(s => ({
@@ -546,11 +552,11 @@ export default {
                 // Загружаем студентов для перевода
                 const [studentsRes, groupsRes] = await Promise.all([
                     axios.get(
-                        `http://localhost:3000/api/academic-year/students/continuing/${this.currentYearId}`,
+                        `https://backend-8qud.onrender.com/api/academic-year/students/continuing/${this.currentYearId}`,
                         { headers: { Authorization: `Bearer ${token}` } }
                     ),
                     axios.get(
-                        `http://localhost:3000/api/academic-year/groups/available/${this.currentYearId}`,
+                        `https://backend-8qud.onrender.com/api/academic-year/groups/available/${this.currentYearId}`,
                         { headers: { Authorization: `Bearer ${token}` } }
                     )
                 ]);
@@ -584,7 +590,7 @@ export default {
                 );
 
                 const response = await axios.post(
-                    'http://localhost:3000/api/academic-year/student-processing',
+                    'https://backend-8qud.onrender.com/api/academic-year/student-processing',
                     {
                         currentYearId: this.currentYearId,
                         nextYear: this.nextYear,
@@ -617,7 +623,7 @@ export default {
             formData.append('file', this.file);
 
             try {
-                const response = await axios.post('/api/academic-year/groups/parse-excel', formData, {
+                const response = await axios.post('https://backend-8qud.onrender.com/api/academic-year/groups/parse-excel', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -644,7 +650,7 @@ export default {
             // Проверяем валидность всех названий групп перед отправкой
             const invalidGroups = this.excelData.filter(
                 group => !/^\d{7}\/\d{5}$/.test(group.proposedGroupName))
-                    .map(group => group.proposedGroupName);
+                .map(group => group.proposedGroupName);
 
             if (invalidGroups.length > 0) {
                 this.$notify({
@@ -660,7 +666,7 @@ export default {
 
             try {
                 for (const group of this.excelData) {
-                    await axios.post('/api/academic-year/groups/manual', {
+                    await axios.post('https://backend-8qud.onrender.com/api/academic-year/groups/manual', {
                         groupName: group.proposedGroupName,
                         students: group.students.map(s => s.full_name),
                         yearId: this.currentYearId
@@ -700,7 +706,7 @@ export default {
                 .filter(s => s.length > 0);
 
             try {
-                await axios.post('/api/academic-year/groups/manual', {
+                await axios.post('https://backend-8qud.onrender.com/api/academic-year/groups/manual', {
                     groupName: this.newGroup.name,
                     students,
                     yearId: this.currentYearId
@@ -718,7 +724,7 @@ export default {
         async confirmExcelGroup() {
             try {
                 this.processing = true;
-                await axios.post('/api/academic-year/groups/manual', {
+                await axios.post('https://backend-8qud.onrender.com/api/academic-year/groups/manual', {
                     groupName: this.excelData.proposedGroupName,
                     students: this.excelData.students.map(s => s.full_name),
                     yearId: this.currentYearId
@@ -752,7 +758,7 @@ export default {
                 const token = localStorage.getItem('token');
 
                 const response = await axios.post(
-                    'http://localhost:3000/api/academic-year/complete-transition',
+                    'https://backend-8qud.onrender.com/api/academic-year/complete-transition',
                     {
                         currentYearId: this.currentYearId,
                         nextYear: this.nextYear
@@ -781,7 +787,7 @@ export default {
         },
 
         async loadGroupSubjects() {
-            const response = await axios.get('http://localhost:3000/api/academic-year/group-subjects/active', {
+            const response = await axios.get('https://backend-8qud.onrender.com/api/academic-year/group-subjects/active', {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
             this.groupSubjects = response.data.data;
@@ -806,14 +812,14 @@ export default {
                     }));
 
                 await axios.post(
-                    'http://localhost:3000/api/academic-year/assign',
+                    'https://backend-8qud.onrender.com/api/academic-year/assign',
                     { assignments },
                     { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
                 );
 
                 // 2. Добавляем пустые оценки для всех студентов
                 await axios.post(
-                    'http://localhost:3000/api/academic-year/grades/initialize',
+                    'https://backend-8qud.onrender.com/api/academic-year/grades/initialize',
                     { yearId: this.currentYearId },
                     { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
                 );
