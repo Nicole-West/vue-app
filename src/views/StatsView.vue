@@ -232,13 +232,22 @@ export default {
                 );
 
                 // Получаем имя файла из заголовков
-                const contentDisposition = response.headers['content-disposition'];
                 let fileName = 'оценки.xlsx';
+                const contentDisposition = response.headers['content-disposition'];
 
                 if (contentDisposition) {
-                    const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/);
-                    if (fileNameMatch && fileNameMatch[1]) {
-                        fileName = decodeURIComponent(fileNameMatch[1]);
+                    // Пробуем разные варианты извлечения имени файла
+                    const fileNameRegex = /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/i;
+                    const matches = fileNameRegex.exec(contentDisposition);
+
+                    if (matches && matches[1]) {
+                        fileName = decodeURIComponent(matches[1]);
+                    } else {
+                        // Альтернативный вариант, если первый не сработал
+                        const simpleMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+                        if (simpleMatch && simpleMatch[1]) {
+                            fileName = simpleMatch[1];
+                        }
                     }
                 }
 
@@ -249,7 +258,12 @@ export default {
                 link.setAttribute('download', fileName);
                 document.body.appendChild(link);
                 link.click();
-                link.remove();
+
+                // Очистка
+                setTimeout(() => {
+                    window.URL.revokeObjectURL(url);
+                    link.remove();
+                }, 100);
 
             } catch (err) {
                 console.error('Ошибка экспорта:', err);
