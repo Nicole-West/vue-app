@@ -224,27 +224,41 @@ export default {
 
                 const response = await axios.get(
                     `https://backend-8qud.onrender.com/api/stats/export-grades?${params.toString()}`,
-                    // `http://localhost:3000/api/stats/export-grades?${params.toString()}`,
+                    // `/api/stats/export-grades?${params.toString()}`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                         responseType: 'blob'
                     }
                 );
 
-                // Создаем временную ссылку для скачивания
+                // Получаем имя файла из заголовков
+                const contentDisposition = response.headers['content-disposition'];
+                let fileName = 'оценки.xlsx';
+
+                if (contentDisposition) {
+                    const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/);
+                    if (fileNameMatch && fileNameMatch[1]) {
+                        fileName = decodeURIComponent(fileNameMatch[1]);
+                    }
+                }
+
+                // Создаем ссылку для скачивания
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
                 link.href = url;
-
-                // Имя файла будет установлено сервером
-                link.setAttribute('download', '');
+                link.setAttribute('download', fileName);
                 document.body.appendChild(link);
                 link.click();
                 link.remove();
 
             } catch (err) {
                 console.error('Ошибка экспорта:', err);
-                alert('Ошибка при экспорте данных: ' + err.response?.data?.message || err.message);
+
+                if (err.response?.data?.message) {
+                    alert(`Ошибка: ${err.response.data.message}`);
+                } else {
+                    alert('Произошла ошибка при экспорте данных');
+                }
             }
         }
     }
