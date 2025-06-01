@@ -245,19 +245,46 @@ export default {
                     const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/);
                     console.log(fileNameMatch)
                     if (fileNameMatch && fileNameMatch[1]) {
-                        fileName = decodeURIComponent(fileNameMatch[1]);
-                        console.log(fileName)
+                        fileName = decodeURIComponent(fileNameMatch[1])
+                            .trim() // удаляем пробелы по краям
+                            .replace(/[^\wа-яёЁ\-().]/gi, '_') // заменяем спецсимволы на _
+                            .replace(/_+/g, '_') // удаляем дубли _
+                            .replace(/_+$/, ''); // удаляем _ в конце
+
+                        // 3. Фикс для браузеров: добавляем расширение, если его нет
+                        if (!fileName.toLowerCase().endsWith('.xlsx')) {
+                            fileName += '.xlsx';
+                        }
                     }
                 }
 
-                // Создаем ссылку для скачивания
-                const url = window.URL.createObjectURL(new Blob([response.data]));
+                // // Создаем ссылку для скачивания
+                // const url = window.URL.createObjectURL(new Blob([response.data]));
+                // const link = document.createElement('a');
+                // link.href = url;
+                // link.setAttribute('download', fileName);
+                // document.body.appendChild(link);
+                // link.click();
+                // link.remove();
+
+                // 4. Альтернативный метод скачивания (обходит баг браузера)
+                const blob = new Blob([response.data]);
+                const url = URL.createObjectURL(blob);
+
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', fileName.replace(/_+$/, ''));
+                link.download = fileName;
+
+                // 5. Важный фикс - добавляем задержку перед удалением
+                link.style.display = 'none';
                 document.body.appendChild(link);
-                link.click();
-                link.remove();
+                setTimeout(() => {
+                    link.click();
+                    setTimeout(() => {
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(url);
+                    }, 100);
+                }, 50);
 
             } catch (err) {
                 console.error('Ошибка экспорта:', err);
