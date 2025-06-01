@@ -231,23 +231,22 @@ export default {
                     }
                 );
 
+                console.log(response)
+                console.log('Все заголовки:', response.headers);
+
                 // Получаем имя файла из заголовков
+                const contentDisposition = response.headers['content-disposition']; // ← lowercase!
+                // console.log(contentDisposition);
+
                 let fileName = 'оценки.xlsx';
-                const contentDisposition = response.headers['content-disposition'];
 
                 if (contentDisposition) {
-                    // Пробуем разные варианты извлечения имени файла
-                    const fileNameRegex = /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/i;
-                    const matches = fileNameRegex.exec(contentDisposition);
-
-                    if (matches && matches[1]) {
-                        fileName = decodeURIComponent(matches[1]);
-                    } else {
-                        // Альтернативный вариант, если первый не сработал
-                        const simpleMatch = contentDisposition.match(/filename="?([^"]+)"?/);
-                        if (simpleMatch && simpleMatch[1]) {
-                            fileName = simpleMatch[1];
-                        }
+                    // console.log('contentDisposition')
+                    const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/);
+                    console.log(fileNameMatch)
+                    if (fileNameMatch && fileNameMatch[1]) {
+                        fileName = decodeURIComponent(fileNameMatch[1]);
+                        console.log(fileName)
                     }
                 }
 
@@ -255,15 +254,10 @@ export default {
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', fileName);
+                link.setAttribute('download', fileName.replace(/_+$/, ''));
                 document.body.appendChild(link);
                 link.click();
-
-                // Очистка
-                setTimeout(() => {
-                    window.URL.revokeObjectURL(url);
-                    link.remove();
-                }, 100);
+                link.remove();
 
             } catch (err) {
                 console.error('Ошибка экспорта:', err);
