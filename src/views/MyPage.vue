@@ -106,9 +106,9 @@ export default {
 
       const res = await axios.get('https://backend-8qud.onrender.com/api/dashboard', {
         // const res = await axios.get('http://localhost:3000/api/dashboard', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        // headers: {
+        //   Authorization: `Bearer ${token}`
+        // }
       });
       this.dashboard = res.data;
       console.log('[GET] /api/dashboard →', res.data);
