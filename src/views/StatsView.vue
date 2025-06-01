@@ -210,11 +210,12 @@ export default {
         },
 
         async exportExcel() {
-            if (!this.exportData.group_id || !this.exportData.subject_id) return;
-
-            this.exportLoading = true;
-
             try {
+                if (!this.exportData.group_id || !this.exportData.subject_id) {
+                    alert('Выберите группу и предмет');
+                    return;
+                }
+
                 const token = localStorage.getItem('token');
                 const params = new URLSearchParams({
                     group_id: this.exportData.group_id,
@@ -230,21 +231,20 @@ export default {
                     }
                 );
 
+                // Создаем временную ссылку для скачивания
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute(
-                    'download',
-                    `grades_${this.exportData.group_id}_${this.exportData.subject_id}.xlsx`
-                );
+
+                // Имя файла будет установлено сервером
+                link.setAttribute('download', '');
                 document.body.appendChild(link);
                 link.click();
                 link.remove();
+
             } catch (err) {
                 console.error('Ошибка экспорта:', err);
-                alert('Ошибка при экспорте данных');
-            } finally {
-                this.exportLoading = false;
+                alert('Ошибка при экспорте данных: ' + err.response?.data?.message || err.message);
             }
         }
     }
