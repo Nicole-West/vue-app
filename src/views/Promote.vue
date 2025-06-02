@@ -98,7 +98,7 @@
                     <div class="flex space-x-3">
                         <button class="btn_admin bg-blue-600" @click="saveAcademicLeaveDecisions">
                             {{ academicLeaveStudents && academicLeaveStudents.length > 0 ? 'Сохранить решения' :
-                            'Продолжить' }}
+                                'Продолжить' }}
                         </button>
                         <button class="btn_admin bg-gray-500" @click="step = 2">
                             Назад
@@ -598,8 +598,8 @@ export default {
                         this.continuingGroups.forEach(group => {
                             if (group.students) {
                                 group.students.forEach(student => {
-                                    this.$set(student, 'action', 'continue');
-                                    this.$set(student, 'new_group_id', null);
+                                    student.action = 'continue';
+                                    student.new_group_id = null;
                                 });
                             }
                         });
