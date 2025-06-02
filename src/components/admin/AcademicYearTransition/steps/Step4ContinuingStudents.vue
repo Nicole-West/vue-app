@@ -3,14 +3,7 @@
         <h3 class="text-lg font-semibold mb-4">Перевод студентов на следующий курс</h3>
 
         <div v-if="loadingContinuingStudents">Загрузка данных...</div>
-
         <div v-else-if="continuingStudentsError" class="text-red-500 mb-4">{{ continuingStudentsError }}</div>
-        <div v-else-if="noStudentsToContinue" class="mb-4">
-            <p>Нет студентов для перевода.</p>
-            <button class="btn_admin bg-blue-600 mt-4" @click="$emit('next-step')">
-                Перейти к добавлению новых групп
-            </button>
-        </div>
         <div v-else>
             <div class="mb-6" v-for="group in continuingGroups" :key="group.group_id">
                 <h4 class="font-medium mb-2">
@@ -63,8 +56,7 @@ export default {
             continuingStudentsError: null,
             continuingGroups: [],
             availableGroups: [],
-            processingTransition: false,
-            noStudentsToContinue: false // Флаг для случая, когда студентов нет
+            processingTransition: false
         };
     },
     methods: {
@@ -80,44 +72,37 @@ export default {
                     `https://backend-8qud.onrender.com/api/academic-year/students/continuing/${this.currentYearId}`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
-                        // timeout: 10000 // 10 секунд таймаут
+                        timeout: 10000 // 10 секунд таймаут
                     }
-                );
-                // ).catch(error => {
-                //     console.error('Ошибка при загрузке студентов:', error);
-                //     throw error;
-                // });
+                ).catch(error => {
+                    console.error('Ошибка при загрузке студентов:', error);
+                    throw error;
+                });
 
                 const groupsRes = await axios.get(
                     `https://backend-8qud.onrender.com/api/academic-year/groups/available/${this.currentYearId}`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
-                        // timeout: 10000 // 10 секунд таймаут
+                        timeout: 10000 // 10 секунд таймаут
                     }
-                );
-                // ).catch(error => {
-                //     console.error('Ошибка при загрузке групп:', error);
-                //     throw error;
-                // });
+                ).catch(error => {
+                    console.error('Ошибка при загрузке групп:', error);
+                    throw error;
+                });
 
                 if (studentsRes.data.success && groupsRes.data.success) {
                     this.continuingGroups = studentsRes.data.data;
                     this.availableGroups = groupsRes.data.data;
 
-                    // Проверяем, есть ли студенты для перевода
-                    this.noStudentsToContinue = this.continuingGroups.length === 0 ||
-                        this.continuingGroups.every(g => g.students.length === 0);
-
-
                     // Инициализируем action для каждого студента
-                    if (!this.noStudentsToContinue) {
-                        this.continuingGroups.forEach(group => {
-                            group.students.forEach(student => {
-                                this.$set(student, 'action', 'continue');
-                                this.$set(student, 'new_group_id', null);
-                            });
+                    this.continuingGroups.forEach(group => {
+                        group.students.forEach(student => {
+                            this.$set(student, 'action', 'continue');
+                            this.$set(student, 'new_group_id', null);
                         });
-                    }
+                    });
+                } else {
+                    throw new Error('Ошибка при загрузке данных');
                 }
             } catch (err) {
                 this.continuingStudentsError = err.response?.data?.message ||

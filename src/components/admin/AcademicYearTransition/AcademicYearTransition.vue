@@ -73,15 +73,7 @@ export default {
             }
         },
         handleNextStep() {
-            // Если на шаге 3 нет студентов в академе, или на шаге 4 нет студентов для перевода,
-            // пропускаем соответствующие шаги
-            if (this.step === 3 && this.$refs.currentStep.noStudentsInLeave) {
-                this.step = 5; // Пропускаем шаг 4, если нет студентов в академе
-            } else if (this.step === 4 && this.$refs.currentStep.noStudentsToContinue) {
-                this.step = 5; // Пропускаем шаг 5, если нет студентов для перевода
-            } else {
-                this.step++;
-            }
+            this.step++;
         },
         handlePrevStep() {
             this.step--;
