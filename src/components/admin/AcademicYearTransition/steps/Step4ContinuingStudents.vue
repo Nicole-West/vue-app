@@ -67,32 +67,56 @@ export default {
             try {
                 const token = localStorage.getItem('token');
 
-                const [studentsRes, groupsRes] = await Promise.all([
-                    axios.get(
-                        `https://backend-8qud.onrender.com/api/academic-year/students/continuing/${this.currentYearId}`,
-                        { headers: { Authorization: `Bearer ${token}` } }
-                    ),
-                    axios.get(
-                        `https://backend-8qud.onrender.com/api/academic-year/groups/available/${this.currentYearId}`,
-                        { headers: { Authorization: `Bearer ${token}` } }
-                    )
-                ]);
+                // Заменяем retryableAxiosRequest на обычные запросы с обработкой ошибок
+                const studentsRes = await axios.get(
+                    `https://backend-8qud.onrender.com/api/academic-year/students/continuing/${this.currentYearId}`,
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                        timeout: 10000 // 10 секунд таймаут
+                    }
+                ).catch(error => {
+                    console.error('Ошибка при загрузке студентов:', error);
+                    throw error;
+                });
+
+                const groupsRes = await axios.get(
+                    `https://backend-8qud.onrender.com/api/academic-year/groups/available/${this.currentYearId}`,
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                        timeout: 10000 // 10 секунд таймаут
+                    }
+                ).catch(error => {
+                    console.error('Ошибка при загрузке групп:', error);
+                    throw error;
+                });
 
                 if (studentsRes.data.success && groupsRes.data.success) {
                     this.continuingGroups = studentsRes.data.data;
                     this.availableGroups = groupsRes.data.data;
+
+                    // Инициализируем action для каждого студента
+                    this.continuingGroups.forEach(group => {
+                        group.students.forEach(student => {
+                            this.$set(student, 'action', 'continue');
+                            this.$set(student, 'new_group_id', null);
+                        });
+                    });
                 } else {
-                    this.continuingStudentsError = 'Ошибка при загрузке данных';
+                    throw new Error('Ошибка при загрузке данных');
                 }
             } catch (err) {
-                this.continuingStudentsError = err.response?.data?.message || 'Не удалось загрузить данные';
+                this.continuingStudentsError = err.response?.data?.message ||
+                    err.message ||
+                    'Не удалось загрузить данные';
                 console.error('Ошибка:', err);
             } finally {
                 this.loadingContinuingStudents = false;
             }
         },
+
         async processStudentTransitions() {
             this.processingTransition = true;
+            this.continuingStudentsError = null;
 
             try {
                 const token = localStorage.getItem('token');
@@ -105,6 +129,12 @@ export default {
                     }))
                 );
 
+                console.log('Отправляемые данные:', {
+                    currentYearId: this.currentYearId,
+                    nextYear: this.nextYear,
+                    transitions
+                });
+
                 const response = await axios.post(
                     'https://backend-8qud.onrender.com/api/academic-year/student-processing',
                     {
@@ -112,13 +142,21 @@ export default {
                         nextYear: this.nextYear,
                         transitions
                     },
-                    { headers: { Authorization: `Bearer ${token}` } }
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                        timeout: 15000 // 15 секунд таймаут
+                    }
                 );
 
                 if (response.data.success) {
                     this.$emit('next-step');
+                } else {
+                    throw new Error(response.data.message || 'Ошибка при обработке перевода');
                 }
             } catch (err) {
+                this.continuingStudentsError = err.response?.data?.message ||
+                    err.message ||
+                    'Ошибка при завершении перехода';
                 console.error('Ошибка:', err);
             } finally {
                 this.processingTransition = false;
