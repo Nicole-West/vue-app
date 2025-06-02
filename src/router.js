@@ -10,7 +10,8 @@ import Archive from './views/ArchivePage.vue';
 
 import AdminPage from './views/AdminPage.vue';
 import ApprovePage from './views/ApproveUsers.vue';
-import PromotePage from './components/admin/AcademicYearTransition/AcademicYearTransition.vue';
+import PromotePage from './views/Promote.vue';
+// import AcademicYearTransition from './components/admin/AcademicYearTransition/AcademicYearTransition.vue';
 import NextMonth from './views/NextMonth.vue';
 import NextSemester from './views/NextSemester.vue';
 import StatsView from './views/StatsView.vue';
