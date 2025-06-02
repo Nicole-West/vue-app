@@ -63,7 +63,8 @@
                 <div v-if="loadingAcademicLeaves">Загрузка данных...</div>
                 <div v-else-if="academicLeaveError" class="text-red-500 mb-4">{{ academicLeaveError }}</div>
                 <div v-else>
-                    <div class="mb-6 overflow-x-auto">
+                    <div v-if="academicLeaveStudents && academicLeaveStudents.length > 0" class="mb-6 overflow-x-auto">
+
                         <table class="min-w-full bg-white">
                             <thead>
                                 <tr>
@@ -90,9 +91,14 @@
                         </table>
                     </div>
 
+                    <div v-else class="mb-6 text-gray-500">
+                        Нет студентов в академическом отпуске
+                    </div>
+
                     <div class="flex space-x-3">
                         <button class="btn_admin bg-blue-600" @click="saveAcademicLeaveDecisions">
-                            Сохранить решения
+                            {{ academicLeaveStudents && academicLeaveStudents.length > 0 ? 'Сохранить решения' :
+                            'Продолжить' }}
                         </button>
                         <button class="btn_admin bg-gray-500" @click="step = 2">
                             Назад
@@ -516,8 +522,8 @@ export default {
             try {
                 const token = localStorage.getItem('token');
 
-                // Если нет студентов в академе, просто переходим дальше
-                if (this.academicLeaveStudents.length === 0) {
+                // Modified condition to proceed even with empty array
+                if (!this.academicLeaveStudents || this.academicLeaveStudents.length === 0) {
                     await this.loadContinuingStudents();
                     this.step = 4;
                     return;
@@ -525,7 +531,6 @@ export default {
 
                 const response = await axios.post(
                     'https://backend-8qud.onrender.com/api/academic-year/students/process-academic-leaves',
-                    // 'http://localhost:3000/api/academic-year/students/process-academic-leaves',
                     {
                         yearId: this.currentYearId,
                         decisions: this.academicLeaveStudents.map(s => ({
