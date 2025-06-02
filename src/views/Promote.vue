@@ -549,17 +549,27 @@ export default {
             try {
                 const token = localStorage.getItem('token');
 
-                // Загружаем студентов для перевода
-                const [studentsRes, groupsRes] = await Promise.all([
-                    axios.get(
-                        `https://backend-8qud.onrender.com/api/academic-year/students/continuing/${this.currentYearId}`,
-                        { headers: { Authorization: `Bearer ${token}` } }
-                    ),
-                    axios.get(
-                        `https://backend-8qud.onrender.com/api/academic-year/groups/available/${this.currentYearId}`,
-                        { headers: { Authorization: `Bearer ${token}` } }
-                    )
-                ]);
+                // // Загружаем студентов для перевода
+                // const [studentsRes, groupsRes] = await Promise.all([
+                //     axios.get(
+                //         `https://backend-8qud.onrender.com/api/academic-year/students/continuing/${this.currentYearId}`,
+                //         { headers: { Authorization: `Bearer ${token}` } }
+                //     ),
+                //     axios.get(
+                //         `https://backend-8qud.onrender.com/api/academic-year/groups/available/${this.currentYearId}`,
+                //         { headers: { Authorization: `Bearer ${token}` } }
+                //     )
+                // ]);
+
+                const studentsRes = await this.retryableAxiosRequest(
+                    `https://backend-8qud.onrender.com/api/academic-year/students/continuing/${this.currentYearId}`,
+                    token
+                );
+
+                const groupsRes = await this.retryableAxiosRequest(
+                    `https://backend-8qud.onrender.com/api/academic-year/groups/available/${this.currentYearId}`,
+                    token
+                );
 
                 if (studentsRes.data.success && groupsRes.data.success) {
                     this.continuingGroups = studentsRes.data.data;
