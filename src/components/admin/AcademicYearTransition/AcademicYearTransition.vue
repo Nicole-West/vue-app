@@ -50,6 +50,21 @@ export default {
             currentYearId: null
         };
     },
+    watch: {
+        // Синхронизация шага с URL
+        step(newStep) {
+            this.updateRoute(newStep)
+        },
+        // Обработка изменения роута
+        '$route.query.step': {
+            immediate: true,
+            handler(newStep) {
+                if (newStep) {
+                    this.step = parseInt(newStep)
+                }
+            }
+        }
+    },
     computed: {
         currentStepComponent() {
             return steps[this.step];
@@ -72,19 +87,36 @@ export default {
                 console.error('Ошибка:', err);
             }
         },
+        // Обновление URL при изменении шага
+        updateRoute(step) {
+            if (this.$route.query.step !== step.toString()) {
+                this.$router.replace({
+                    query: { ...this.$route.query, step }
+                }).catch(() => { })
+            }
+        },
         handleNextStep() {
-            // Если на шаге 3 нет студентов в академе, или на шаге 4 нет студентов для перевода,
-            // пропускаем соответствующие шаги
             if (this.step === 3 && this.$refs.currentStep.noStudentsInLeave) {
-                this.step = 5; // Пропускаем шаг 4, если нет студентов в академе
+                this.step = 5 // Пропускаем шаг 4 если нет студентов в академе
             } else if (this.step === 4 && this.$refs.currentStep.noStudentsToContinue) {
-                this.step = 5; // Пропускаем шаг 5, если нет студентов для перевода
+                this.step = 5 // Пропускаем шаг 5 если нет студентов для перевода
             } else {
-                this.step++;
+                this.step = Math.min(this.step + 1, 6) // Не превышаем максимальный шаг
             }
         },
         handlePrevStep() {
-            this.step--;
+            // Умная навигация назад с учетом пропущенных шагов
+            if (this.step === 5) {
+                if (this.$refs.currentStep.noStudentsToContinue) {
+                    this.step = 3
+                } else if (this.$refs.currentStep.noStudentsInLeave) {
+                    this.step = 1
+                } else {
+                    this.step = 4
+                }
+            } else {
+                this.step = Math.max(this.step - 1, 1) // Не опускаемся ниже 1
+            }
         },
         handleComplete() {
             router.push('/admin');

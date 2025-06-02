@@ -10,7 +10,7 @@ import Archive from './views/ArchivePage.vue';
 
 import AdminPage from './views/AdminPage.vue';
 import ApprovePage from './views/ApproveUsers.vue';
-import PromotePage from './components/admin/AcademicYearTransition/AcademicYearTransition.vue';
+import AcademicYearTransition from './components/admin/AcademicYearTransition/AcademicYearTransition.vue';
 import NextMonth from './views/NextMonth.vue';
 import NextSemester from './views/NextSemester.vue';
 import StatsView from './views/StatsView.vue';
@@ -30,7 +30,13 @@ const routes = [
 
   { path: '/admin', component: AdminPage, meta: { requiresAuth: true, requiresAdmin: true } },
   { path: '/admin/approve-users', name: 'ApproveUsers', component: ApprovePage, meta: { requiresAuth: true, requiresAdmin: true } },
-  { path: '/admin/promote-students', name: 'PromoteStudents', component: PromotePage, meta: { requiresAuth: true, requiresAdmin: true } },
+  // { path: '/admin/promote-students', name: 'PromoteStudents', component: PromotePage, meta: { requiresAuth: true, requiresAdmin: true } },
+  {
+    path: '/admin/academic-year-transition',
+    name: 'AcademicYearTransition',
+    component: AcademicYearTransition,
+    meta: { requiresAuth: true }
+  },
   { path: '/admin/next-month', component: NextMonth, meta: { requiresAdmin: true } },
   { path: '/admin/next-semester', component: NextSemester, meta: { requiresAdmin: true } },
 ];
