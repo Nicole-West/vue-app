@@ -374,12 +374,7 @@ export default {
             try {
                 const token = localStorage.getItem('token');
 
-                if (updates.some(u => !u.new_status)) {
-                    alert('У всех студентов должен быть выбран новый статус.');
-                    return;
-                }
-
-                // Подготовка данных для отправки
+                // ⬇️ Сначала объявляем updates
                 const updates = this.groupsWithStudents.flatMap(group =>
                     group.students.map(student => ({
                         student_id: student.student_id,
@@ -389,19 +384,25 @@ export default {
                     }))
                 );
 
+                // ⬇️ Потом проверяем
+                if (updates.some(u => !u.new_status)) {
+                    alert('У всех студентов должен быть выбран новый статус.');
+                    return;
+                }
+
                 await axios.post(
                     'https://backend-8qud.onrender.com/api/semester-transition/update-student-statuses',
                     { updates },
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
-                // Переходим к обработке академотпусков
                 await this.loadAcademicLeaveStudents();
                 this.step = 3;
             } catch (error) {
                 console.error('Ошибка при сохранении статусов:', error);
             }
-        },
+        }
+        ,
 
         async loadAcademicLeaveStudents() {
             try {
