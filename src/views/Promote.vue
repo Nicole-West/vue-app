@@ -515,6 +515,14 @@ export default {
 
             try {
                 const token = localStorage.getItem('token');
+
+                // Если нет студентов в академе, просто переходим дальше
+                if (this.academicLeaveStudents.length === 0) {
+                    await this.loadContinuingStudents();
+                    this.step = 4;
+                    return;
+                }
+
                 const response = await axios.post(
                     'https://backend-8qud.onrender.com/api/academic-year/students/process-academic-leaves',
                     // 'http://localhost:3000/api/academic-year/students/process-academic-leaves',
@@ -561,19 +569,36 @@ export default {
                 //     )
                 // ]);
 
-                const studentsRes = await this.retryableAxiosRequest(
+                // const studentsRes = await this.retryableAxiosRequest(
+                const studentsRes = await axios.get(
                     `https://backend-8qud.onrender.com/api/academic-year/students/continuing/${this.currentYearId}`,
-                    token
+                    { headers: { Authorization: `Bearer ${token}` } }
                 );
 
-                const groupsRes = await this.retryableAxiosRequest(
+                const groupsRes = await axios.get(
                     `https://backend-8qud.onrender.com/api/academic-year/groups/available/${this.currentYearId}`,
-                    token
+                    { headers: { Authorization: `Bearer ${token}` } }
                 );
 
                 if (studentsRes.data.success && groupsRes.data.success) {
-                    this.continuingGroups = studentsRes.data.data;
-                    this.availableGroups = groupsRes.data.data;
+                    this.continuingGroups = studentsRes.data.data || [];
+                    this.availableGroups = groupsRes.data.data || [];
+
+                    // Если нет студентов для перевода, показываем сообщение
+                    if (this.continuingGroups.length === 0 ||
+                        this.continuingGroups.every(g => !g.students || g.students.length === 0)) {
+                        this.continuingStudentsError = 'Нет студентов для перевода';
+                    } else {
+                        // Инициализируем action для каждого студента
+                        this.continuingGroups.forEach(group => {
+                            if (group.students) {
+                                group.students.forEach(student => {
+                                    this.$set(student, 'action', 'continue');
+                                    this.$set(student, 'new_group_id', null);
+                                });
+                            }
+                        });
+                    }
                 } else {
                     this.continuingStudentsError = 'Ошибка при загрузке данных';
                 }
@@ -590,6 +615,14 @@ export default {
 
             try {
                 const token = localStorage.getItem('token');
+
+                // Если нет студентов для перевода, просто переходим дальше
+                if (this.continuingGroups.length === 0 ||
+                    this.continuingGroups.every(g => !g.students || g.students.length === 0)) {
+                    this.step = 5;
+                    return;
+                }
+
                 const transitions = this.continuingGroups.flatMap(group =>
                     group.students.map(student => ({
                         student_id: student.student_id,
