@@ -286,7 +286,7 @@ export default {
         async loadInitialData() {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get('http://localhost:3000/api/semester-transition/init', {
+                const response = await axios.get('https://backend-8qud.onrender.com/api/semester-transition/init', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -311,14 +311,14 @@ export default {
 
                 // 1. Деактивируем текущий месяц (декабрь)
                 await axios.post(
-                    'http://localhost:3000/api/semester-transition/deactivate-month',
+                    'https://backend-8qud.onrender.com/api/semester-transition/deactivate-month',
                     { month: '12' },
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
                 // 2. Добавляем новый месяц (февраль)
                 await axios.post(
-                    'http://localhost:3000/api/semester-transition/add-month',
+                    'https://backend-8qud.onrender.com/api/semester-transition/add-month',
                     { month: '2', yearId: this.currentYearId },
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
@@ -335,7 +335,7 @@ export default {
             try {
                 const token = localStorage.getItem('token');
                 const response = await axios.get(
-                    'http://localhost:3000/api/semester-transition/current-students',
+                    'https://backend-8qud.onrender.com/api/semester-transition/current-students',
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
@@ -353,7 +353,7 @@ export default {
             try {
                 const token = localStorage.getItem('token');
                 const response = await axios.get(
-                    'http://localhost:3000/api/semester-transition/available-groups',
+                    'https://backend-8qud.onrender.com/api/semester-transition/available-groups',
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
                 this.availableGroups = response.data.data;
@@ -374,6 +374,11 @@ export default {
             try {
                 const token = localStorage.getItem('token');
 
+                if (updates.some(u => !u.new_status)) {
+                    alert('У всех студентов должен быть выбран новый статус.');
+                    return;
+                }
+
                 // Подготовка данных для отправки
                 const updates = this.groupsWithStudents.flatMap(group =>
                     group.students.map(student => ({
@@ -385,7 +390,7 @@ export default {
                 );
 
                 await axios.post(
-                    'http://localhost:3000/api/semester-transition/update-student-statuses',
+                    'https://backend-8qud.onrender.com/api/semester-transition/update-student-statuses',
                     { updates },
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
@@ -402,7 +407,7 @@ export default {
             try {
                 const token = localStorage.getItem('token');
                 const response = await axios.get(
-                    `http://localhost:3000/api/semester-transition/academic-leaves`,
+                    `https://backend-8qud.onrender.com/api/semester-transition/academic-leaves`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
@@ -435,7 +440,7 @@ export default {
                 }));
 
                 await axios.post(
-                    'http://localhost:3000/api/semester-transition/process-academic-leaves',
+                    'https://backend-8qud.onrender.com/api/semester-transition/process-academic-leaves',
                     { decisions },
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
@@ -453,7 +458,7 @@ export default {
             try {
                 const token = localStorage.getItem('token');
                 await axios.post(
-                    'http://localhost:3000/api/semester-transition/process-group-subjects',
+                    'https://backend-8qud.onrender.com/api/semester-transition/process-group-subjects',
                     { yearId: this.currentYearId },
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
@@ -468,11 +473,11 @@ export default {
                 const token = localStorage.getItem('token');
                 const [groupSubjectsRes, teachersRes] = await Promise.all([
                     axios.get(
-                        `http://localhost:3000/api/semester-transition/group-subjects`,
+                        `https://backend-8qud.onrender.com/api/semester-transition/group-subjects`,
                         { headers: { Authorization: `Bearer ${token}` } }
                     ),
                     axios.get(
-                        `http://localhost:3000/api/semester-transition/teachers`,
+                        `https://backend-8qud.onrender.com/api/semester-transition/teachers`,
                         { headers: { Authorization: `Bearer ${token}` } }
                     )
                 ]);
@@ -504,7 +509,7 @@ export default {
 
                 if (assignments.length > 0) {
                     await axios.post(
-                        'http://localhost:3000/api/semester-transition/assign-teachers',
+                        'https://backend-8qud.onrender.com/api/semester-transition/assign-teachers',
                         { assignments },
                         { headers: { Authorization: `Bearer ${token}` } }
                     );
@@ -512,7 +517,7 @@ export default {
 
                 // 2. Инициализируем оценки
                 await axios.post(
-                    'http://localhost:3000/api/semester-transition/initialize-grades',
+                    'https://backend-8qud.onrender.com/api/semester-transition/initialize-grades',
                     { yearId: this.currentYearId, semesterId: this.nextSemesterId },
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
@@ -528,28 +533,30 @@ export default {
 };
 </script>
 
+<style scoped>
 .steps {
-display: flex;
-justify-content: space-between;
-margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
 }
 
 .step {
-padding: 0.5rem 1rem;
-border-radius: 0.25rem;
-background: #e5e7eb;
-color: #6b7280;
-flex: 1;
-text-align: center;
-margin: 0 0.25rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    background: #e5e7eb;
+    color: #6b7280;
+    flex: 1;
+    text-align: center;
+    margin: 0 0.25rem;
 }
 
 .step.active {
-background: #3b82f6;
-color: white;
+    background: #3b82f6;
+    color: white;
 }
 
 .step.completed {
-background: #10b981;
-color: white;
+    background: #10b981;
+    color: white;
 }
+</style>
