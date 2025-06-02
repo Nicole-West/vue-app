@@ -1,5 +1,22 @@
 <template>
     <div class="flex flex-col min-h-screen">
+        <header class="header">
+            <router-link to="/my" class="logo"> Home </router-link>
+            <div>
+                <button @click="archive" class="archive-button">
+                    Архив
+                </button>
+
+                <button v-if="userRole === 'senior_teacher'" @click="stats" class="archive-button">
+                    Статистика
+                </button>
+
+                <button @click="logout" class="logout-button">
+                    Выйти
+                </button>
+            </div>
+        </header>
+
         <main class="main flex-1 p-4">
             <h1 class="text-2xl font-bold mb-6">Статистика текущей аттестации</h1>
 
@@ -99,6 +116,9 @@
                 </div>
             </div>
         </main>
+        <footer class="footer">
+            © 2025 Дипломная работа
+        </footer>
     </div>
 </template>
 
