@@ -701,11 +701,9 @@ export default {
                 .map(group => group.proposedGroupName);
 
             if (invalidGroups.length > 0) {
-                this.$notify({
-                    type: 'error',
-                    title: 'Ошибка валидации',
-                    text: `Некорректные названия групп:\n${invalidGroups.join('\n')}\n\nФормат: 1234567/12345`
-                });
+                alert(
+                    `Ошибка валидации:\n\nНекорректные названия групп:\n${invalidGroups.join('\n')}\n\nФормат: 1234567/12345`
+                );
                 return;
             }
 
@@ -728,17 +726,13 @@ export default {
                     this.$refs.fileInput.value = '';
                 }
 
-                this.$notify({
-                    type: 'success',
-                    title: 'Группы добавлены',
-                    text: `Успешно импортировано ${groupsCount} групп`
-                });
+                alert(
+                    `Группы добавлены:\n\nУспешно импортировано ${groupsCount} групп`
+                );
             } catch (err) {
-                this.$notify({
-                    type: 'error',
-                    title: 'Ошибка',
-                    text: err.response?.data?.message || 'Ошибка при создании групп'
-                });
+                alert(
+                    `Ошибка:\n\n${err.response?.data?.message || 'Ошибка при создании групп'}`
+                );
             }
 
 
@@ -782,19 +776,13 @@ export default {
 
                 this.excelData = null;
                 this.$refs.fileInput.value = '';
-                this.$notify({
-                    type: 'success',
-                    title: 'Группа добавлена',
-                    text: 'Студенты успешно импортированы'
-                });
+                alert('Группа добавлена:\n\nСтуденты успешно импортированы');
 
 
             } catch (err) {
-                this.$notify({
-                    type: 'error',
-                    title: 'Ошибка',
-                    text: err.response?.data?.message || 'Ошибка при создании группы'
-                });
+                alert(
+                    `Ошибка:\n\n${err.response?.data?.message || 'Ошибка при создании группы'}`
+                );
             } finally {
                 this.processing = false;
             }
