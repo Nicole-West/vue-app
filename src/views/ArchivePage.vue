@@ -230,3 +230,20 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+table.min-w-full.bg-white {
+    border: 1px solid black;
+    border-collapse: collapse
+}
+
+tr,
+td,
+th {
+    border: 1px solid #000000;
+}
+
+thead {
+    border: 1px solid black;
+}
+</style>
