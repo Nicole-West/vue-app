@@ -54,7 +54,8 @@ export default {
             loadingAcademicLeaves: false,
             academicLeaveError: null,
             academicLeaveStudents: [],
-            processing: false
+            processing: false,
+            noStudentsInLeave: false // Добавляем флаг для случая, когда студентов нет
         };
     },
     methods: {
@@ -74,12 +75,12 @@ export default {
                         ...student,
                         action: 'continue'
                     }));
-                } else {
-                    this.academicLeaveError = response.data.message || 'Ошибка при загрузке данных';
+
+                    // Если студентов нет, устанавливаем флаг
+                    this.noStudentsInLeave = this.academicLeaveStudents.length === 0;
                 }
             } catch (err) {
                 this.academicLeaveError = err.response?.data?.message || 'Не удалось загрузить данные';
-                console.error('Ошибка:', err);
             } finally {
                 this.loadingAcademicLeaves = false;
             }
@@ -89,6 +90,13 @@ export default {
 
             try {
                 const token = localStorage.getItem('token');
+
+                // Если нет студентов, просто переходим дальше
+                if (this.noStudentsInLeave) {
+                    this.$emit('next-step');
+                    return;
+                }
+
                 const response = await axios.post(
                     'https://backend-8qud.onrender.com/api/academic-year/students/process-academic-leaves',
                     {
