@@ -363,7 +363,7 @@ export default {
             academicLeaveError: null,
             academicLeaveStudents: [],
             availableGroups2: [], // Добавьте это
-            showGroupSelection: false,
+            showGroupSelection: true,
 
             // Для шага 4 (перевод студентов)
             loadingContinuingStudents: false,
