@@ -72,7 +72,7 @@
                                     <th class="py-2 px-4 border-b">Группа</th>
                                     <th class="py-2 px-4 border-b">Курс</th>
                                     <th class="py-2 px-4 border-b">Действие</th>
-                                    <th class="py-2 px-4 border-b" v-if="availableGroups2.length > 0">Новая группа</th>
+                                    <th class="py-2 px-4 border-b" v-if="showGroupSelection">Новая группа</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -81,7 +81,7 @@
                                     <td class="py-2 px-4 border-b">{{ student.group_number }}</td>
                                     <td class="py-2 px-4 border-b">{{ student.course_name }}</td>
                                     <td class="py-2 px-4 border-b">
-                                        <select v-model="student.action" class="border rounded px-2 py-1"
+                                        <select v-model="student.action" @change="handleAcademicLeaveAction(student)">
                                             @change="student.new_group_id = null">
                                             <option value="expel">Отчислить</option>
                                             <option value="continue">Продолжить обучение</option>
@@ -89,7 +89,7 @@
                                         </select>
                                     </td>
                                     <td class="py-2 px-4 border-b"
-                                        v-if="student.action === 'continue' && availableGroups2.length > 0">
+                                        v-if="student.action === 'continue' && showGroupSelection">
                                         <select v-model="student.new_group_id" class="border rounded px-2 py-1">
 
                                             <option :value="null">Выберите группу</option>
@@ -363,6 +363,7 @@ export default {
             academicLeaveError: null,
             academicLeaveStudents: [],
             availableGroups2: [], // Добавьте это
+            showGroupSelection: false,
 
             // Для шага 4 (перевод студентов)
             loadingContinuingStudents: false,
@@ -398,6 +399,15 @@ export default {
     },
 
     methods: {
+        handleAcademicLeaveAction(student) {
+            // Если студент продолжает обучение, показываем выбор группы
+            if (student.action === 'continue') {
+                this.showGroupSelection = true;
+            } else {
+                this.showGroupSelection = false;
+            }
+        },
+
         async fetchYearInfo() {
             this.loading = true;
             this.error = null;
@@ -651,7 +661,7 @@ export default {
                         this.continuingGroups.forEach(group => {
                             if (group.students) {
                                 group.students.forEach(student => {
-                                    student.action = 'continue';
+                                    student.action = 'expel';
                                     student.new_group_id = null;
                                 });
                             }
