@@ -72,7 +72,7 @@
                                     <th class="py-2 px-4 border-b">Группа</th>
                                     <th class="py-2 px-4 border-b">Курс</th>
                                     <th class="py-2 px-4 border-b">Действие</th>
-                                    <th class="py-2 px-4 border-b" v-if="availableGroups.length > 0">Новая группа</th>
+                                    <th class="py-2 px-4 border-b" v-if="availableGroups2.length > 0">Новая группа</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -88,11 +88,11 @@
                                             <option value="expel">Отчислить</option>
                                         </select>
                                     </td>
-                                    <td class="py-2 px-4 border-b" v-if="availableGroups.length > 0">
+                                    <td class="py-2 px-4 border-b" v-if="availableGroups2.length > 0">
                                         <select v-model="student.new_group_id" class="border rounded px-2 py-1"
                                             :disabled="student.action !== 'continue'">
                                             <option :value="null">Выберите группу</option>
-                                            <option v-for="group in availableGroups" :key="group.group_id"
+                                            <option v-for="group in availableGroups2" :key="group.group_id"
                                                 :value="group.group_id">
                                                 {{ group.group_number }} ({{ group.course_name }})
                                             </option>
@@ -361,7 +361,7 @@ export default {
             loadingAcademicLeaves: false,
             academicLeaveError: null,
             academicLeaveStudents: [],
-            availableGroups: [], // Добавьте это
+            availableGroups2: [], // Добавьте это
 
             // Для шага 4 (перевод студентов)
             loadingContinuingStudents: false,
@@ -561,7 +561,7 @@ export default {
                 );
 
                 if (response.data.success) {
-                    this.availableGroups = response.data.data;
+                    this.availableGroups2 = response.data.data;
                 }
             } catch (err) {
                 console.error('Ошибка при загрузке групп:', err);
