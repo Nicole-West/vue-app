@@ -175,6 +175,14 @@
                         <input v-model="newGroup.name" placeholder="Например: 101-1">
                     </div>
 
+                    <!-- Добавляем чекбокс для магистров -->
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" v-model="newGroup.isMaster">
+                            Группа магистров
+                        </label>
+                    </div>
+
                     <div class="form-group">
                         <label>Студенты (по одному в строке):</label>
                         <textarea v-model="newGroup.studentsText" rows="10"></textarea>
@@ -199,6 +207,14 @@
                                 <span v-if="!isValidGroupName(group.proposedGroupName)" class="error-message">
                                     Неверный формат названия группы. Формат: 1234567/12345
                                 </span>
+                            </div>
+
+                            <!-- Добавляем чекбокс для магистров -->
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" v-model="group.isMaster">
+                                    Группа магистров
+                                </label>
                             </div>
 
                             <table class="w-full">
@@ -715,7 +731,8 @@ export default {
                     await axios.post('https://backend-8qud.onrender.com/api/academic-year/groups/manual', {
                         groupName: group.proposedGroupName,
                         students: group.students.map(s => s.full_name),
-                        yearId: this.currentYearId
+                        yearId: this.currentYearId,
+                        isMaster: group.isMaster || false // Добавляем флаг магистратуры
                     }, {
                         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                     });
@@ -751,13 +768,14 @@ export default {
                 await axios.post('https://backend-8qud.onrender.com/api/academic-year/groups/manual', {
                     groupName: this.newGroup.name,
                     students,
-                    yearId: this.currentYearId
+                    yearId: this.currentYearId,
+                    isMaster: this.newGroup.isMaster // Добавляем флаг магистратуры
                 }, {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                 });
 
                 alert('Группа успешно добавлена!');
-                this.newGroup = { name: '', studentsText: '' };
+                this.newGroup = { name: '', studentsText: '', isMaster: false };
             } catch (err) {
                 alert(err.response?.data?.message || 'Ошибка при создании группы');
             }

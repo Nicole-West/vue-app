@@ -3,10 +3,6 @@
         <header class="header">
             <router-link to="/my" class="logo"> Home </router-link>
             <div>
-                <button @click="archive" class="archive-button">
-                    Архив
-                </button>
-
                 <button v-if="userRole === 'senior_teacher'" @click="stats" class="archive-button">
                     Статистика
                 </button>
@@ -22,7 +18,7 @@
 
             <!-- Существующая статистика -->
             <div class="stats-card mb-6">
-                <h2 class="text-xl font-semibold mb-4">Неаттестации (пропуски)</h2>
+                <h2 class="text-xl font-semibold mb-4">Кличество отсутвующих оценок</h2>
                 <p class="text-lg">Всего: <span class="font-bold">{{ statsData?.total_failed || 0 }}</span></p>
             </div>
 
@@ -31,7 +27,7 @@
                 <div v-if="statsData?.students_with_3plus_zeros?.length">
                     <div v-for="student in statsData.students_with_3plus_zeros" :key="student.student_id"
                         class="mb-2 p-2 bg-red-100 rounded">
-                        {{ student.full_name }} ({{ student.group_number }}): {{ student.zero_count }} нулей
+                        {{ student.full_name }} ({{ student.group_number }}), нулей: {{ student.zero_count }}
                     </div>
                 </div>
                 <p v-else>Нет студентов с 3+ нулевыми оценками</p>
