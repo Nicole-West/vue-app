@@ -83,14 +83,15 @@
                                     <td class="py-2 px-4 border-b">
                                         <select v-model="student.action" class="border rounded px-2 py-1"
                                             @change="student.new_group_id = null">
+                                            <option value="expel">Отчислить</option>
                                             <option value="continue">Продолжить обучение</option>
                                             <option value="extend">Продлить академ</option>
-                                            <option value="expel">Отчислить</option>
                                         </select>
                                     </td>
-                                    <td class="py-2 px-4 border-b" v-if="availableGroups2.length > 0">
-                                        <select v-model="student.new_group_id" class="border rounded px-2 py-1"
-                                            :disabled="student.action !== 'continue'">
+                                    <td class="py-2 px-4 border-b"
+                                        v-if="student.action === 'continue' && availableGroups2.length > 0">
+                                        <select v-model="student.new_group_id" class="border rounded px-2 py-1">
+
                                             <option :value="null">Выберите группу</option>
                                             <option v-for="group in availableGroups2" :key="group.group_id"
                                                 :value="group.group_id">
