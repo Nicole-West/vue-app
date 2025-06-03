@@ -72,6 +72,7 @@
                                     <th class="py-2 px-4 border-b">Группа</th>
                                     <th class="py-2 px-4 border-b">Курс</th>
                                     <th class="py-2 px-4 border-b">Действие</th>
+                                    <th class="py-2 px-4 border-b" v-if="availableGroups.length > 0">Новая группа</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -80,10 +81,21 @@
                                     <td class="py-2 px-4 border-b">{{ student.group_number }}</td>
                                     <td class="py-2 px-4 border-b">{{ student.course_name }}</td>
                                     <td class="py-2 px-4 border-b">
-                                        <select v-model="student.action" class="border rounded px-2 py-1">
+                                        <select v-model="student.action" class="border rounded px-2 py-1"
+                                            @change="student.new_group_id = null">
                                             <option value="continue">Продолжить обучение</option>
                                             <option value="extend">Продлить академ</option>
                                             <option value="expel">Отчислить</option>
+                                        </select>
+                                    </td>
+                                    <td class="py-2 px-4 border-b" v-if="availableGroups.length > 0">
+                                        <select v-model="student.new_group_id" class="border rounded px-2 py-1"
+                                            :disabled="student.action !== 'continue'">
+                                            <option :value="null">Выберите группу</option>
+                                            <option v-for="group in availableGroups" :key="group.group_id"
+                                                :value="group.group_id">
+                                                {{ group.group_number }} ({{ group.course_name }})
+                                            </option>
                                         </select>
                                     </td>
                                 </tr>
@@ -349,6 +361,7 @@ export default {
             loadingAcademicLeaves: false,
             academicLeaveError: null,
             academicLeaveStudents: [],
+            availableGroups: [], // Добавьте это
 
             // Для шага 4 (перевод студентов)
             loadingContinuingStudents: false,
@@ -510,19 +523,26 @@ export default {
 
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get(
-                    `https://backend-8qud.onrender.com/api/academic-year/students/academic-leaves/${this.currentYearId}`,
-                    // `http://localhost:3000/api/academic-year/students/academic-leaves/${this.currentYearId}`,
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
+                const [studentsRes, groupsRes] = await Promise.all([
+                    axios.get(
+                        `https://backend-8qud.onrender.com/api/academic-year/students/academic-leaves/${this.currentYearId}`,
+                        { headers: { Authorization: `Bearer ${token}` } }
+                    ),
+                    axios.get(
+                        `https://backend-8qud.onrender.com/api/academic-year/available-groups/${this.currentYearId}`,
+                        { headers: { Authorization: `Bearer ${token}` } }
+                    )
+                ]);
 
-                if (response.data.success) {
-                    this.academicLeaveStudents = response.data.data.map(student => ({
+                if (studentsRes.data.success && groupsRes.data.success) {
+                    this.academicLeaveStudents = studentsRes.data.data.map(student => ({
                         ...student,
-                        action: 'continue' // По умолчанию - продолжить обучение
+                        action: 'continue',
+                        new_group_id: null
                     }));
+                    this.availableGroups = groupsRes.data.data;
                 } else {
-                    this.academicLeaveError = response.data.message || 'Ошибка при загрузке данных';
+                    this.academicLeaveError = studentsRes.data.message || 'Ошибка при загрузке данных';
                 }
             } catch (err) {
                 this.academicLeaveError = err.response?.data?.message || 'Не удалось загрузить данные';
@@ -532,13 +552,28 @@ export default {
             }
         },
 
+        async loadAvailableGroups() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await axios.get(
+                    `https://backend-8qud.onrender.com/api/academic-year/available-groups/${this.currentYearId}`,
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+
+                if (response.data.success) {
+                    this.availableGroups = response.data.data;
+                }
+            } catch (err) {
+                console.error('Ошибка при загрузке групп:', err);
+            }
+        },
+
         async saveAcademicLeaveDecisions() {
             this.processing = true;
 
             try {
                 const token = localStorage.getItem('token');
 
-                // Modified condition to proceed even with empty array
                 if (!this.academicLeaveStudents || this.academicLeaveStudents.length === 0) {
                     await this.loadContinuingStudents();
                     this.step = 4;
@@ -551,7 +586,8 @@ export default {
                         yearId: this.currentYearId,
                         decisions: this.academicLeaveStudents.map(s => ({
                             student_id: s.student_id,
-                            action: s.action
+                            action: s.action,
+                            new_group_id: s.action === 'continue' ? s.new_group_id : null
                         }))
                     },
                     { headers: { Authorization: `Bearer ${token}` } }

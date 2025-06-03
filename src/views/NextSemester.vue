@@ -402,7 +402,7 @@ export default {
                 console.error('Ошибка при сохранении статусов:', error);
             }
         }
-        ,
+         ,
 
         async loadAcademicLeaveStudents() {
             try {
