@@ -571,8 +571,11 @@ export default {
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
+                console.log(response);
+
                 if (response.data.success) {
                     this.availableGroups2 = response.data.data;
+                    console.log(this.availableGroups2);
                 }
             } catch (err) {
                 console.error('Ошибка при загрузке групп:', err);
