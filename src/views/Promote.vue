@@ -548,7 +548,7 @@ export default {
                 if (studentsRes.data.success && groupsRes.data.success) {
                     this.academicLeaveStudents = studentsRes.data.data.map(student => ({
                         ...student,
-                        action: 'continue',
+                        action: 'extend',
                         new_group_id: null
                     }));
                     this.availableGroups = groupsRes.data.data;
