@@ -93,7 +93,7 @@
                                         <select v-model="student.new_group_id" class="border rounded px-2 py-1">
 
                                             <option :value="null">Выберите группу</option>
-                                            <option v-for="group in availableGroups2" :key="group.group_id"
+                                            <option v-for="group in availableGroups" :key="group.group_id"
                                                 :value="group.group_id">
                                                 {{ group.group_number }} ({{ group.course_name }})
                                             </option>
