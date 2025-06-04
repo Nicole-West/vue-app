@@ -8,6 +8,7 @@
         <main class="main flex-1 p-4">
             <h2 class="text-xl font-bold mb-4">Переход на следующий учебный год</h2>
 
+            <!-- Шаг 1: Начало перехода -->
             <div v-if="step === 1">
                 <div v-if="loading">Загрузка...</div>
                 <div v-else-if="error" class="text-red-500 mb-4">{{ error }}</div>
@@ -56,73 +57,8 @@
                 </div>
             </div>
 
-            <!-- Шаг 3: Управление академическими отпусками -->
+            <!-- Шаг 3: Перевод продолжающих студентов -->
             <div v-if="step === 3">
-                <h3 class="text-lg font-semibold mb-4">Студенты в академическом отпуске</h3>
-
-                <div v-if="loadingAcademicLeaves">Загрузка данных...</div>
-                <div v-else-if="academicLeaveError" class="text-red-500 mb-4">{{ academicLeaveError }}</div>
-                <div v-else>
-                    <div v-if="academicLeaveStudents && academicLeaveStudents.length > 0" class="mb-6 overflow-x-auto">
-
-                        <table class="min-w-full bg-white">
-                            <thead>
-                                <tr>
-                                    <th class="py-2 px-4 border-b">Студент</th>
-                                    <th class="py-2 px-4 border-b">Группа</th>
-                                    <th class="py-2 px-4 border-b">Курс</th>
-                                    <th class="py-2 px-4 border-b">Действие</th>
-                                    <th class="py-2 px-4 border-b" v-if="showGroupSelection">Новая группа</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="student in academicLeaveStudents" :key="student.student_id">
-                                    <td class="py-2 px-4 border-b">{{ student.full_name }}</td>
-                                    <td class="py-2 px-4 border-b">{{ student.group_number }}</td>
-                                    <td class="py-2 px-4 border-b">{{ student.course_name }}</td>
-                                    <td class="py-2 px-4 border-b">
-                                        <select v-model="student.action" @change="handleAcademicLeaveAction(student)">
-                                            @change="student.new_group_id = null">
-                                            <option value="expel">Отчислить</option>
-                                            <option value="continue">Продолжить обучение</option>
-                                            <option value="extend">Продлить академ</option>
-                                        </select>
-                                    </td>
-                                    <td class="py-2 px-4 border-b"
-                                        v-if="student.action === 'continue' && showGroupSelection">
-                                        <select v-model="student.new_group_id" class="border rounded px-2 py-1">
-
-                                            <option :value="null">Выберите группу</option>
-                                            <option v-for="group in availableGroups2" :key="group.group_id"
-                                                :value="group.group_id">
-                                                {{ group.group_number }} ({{ group.course_name }})
-                                            </option>
-                                        </select>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div v-else class="mb-6 text-gray-500">
-                        Нет студентов в академическом отпуске
-                    </div>
-
-                    <div class="flex space-x-3">
-                        <button class="btn_admin bg-blue-600" @click="saveAcademicLeaveDecisions">
-                            {{ academicLeaveStudents && academicLeaveStudents.length > 0 ? 'Сохранить решения' :
-                                'Продолжить' }}
-                        </button>
-                        <button class="btn_admin bg-gray-500" @click="step = 2">
-                            Назад
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- Шаг 4: Перевод продолжающих студентов -->
-            <div v-if="step === 4">
                 <h3 class="text-lg font-semibold mb-4">Перевод студентов на следующий курс</h3>
 
                 <div v-if="loadingContinuingStudents">Загрузка данных...</div>
@@ -160,16 +96,15 @@
                         <button class="btn_admin bg-blue-600" @click="processStudentTransitions">
                             Подтвердить перевод
                         </button>
-                        <button class="btn_admin bg-gray-500" @click="step = 3">
+                        <button class="btn_admin bg-gray-500" @click="step = 2">
                             Назад
                         </button>
                     </div>
                 </div>
             </div>
 
-
-            <!-- Шаг 5: Добавление новых групп -->
-            <div v-if="step === 5">
+            <!-- Шаг 4: Добавление новых групп -->
+            <div v-if="step === 4">
                 <h3>Добавление групп первокурсников</h3>
 
                 <div class="tabs mb-4">
@@ -256,29 +191,87 @@
                     </div>
                 </div>
 
-                <!-- <button @click="completeTransition" class="btn-next">Завершить переход</button> -->
-
-                <!-- Кнопка продолжения -->
                 <div class="mt-8 pt-4 border-t">
-                    <button @click="moveToStep6" class="btn-continue" :disabled="processing">
+                    <button @click="moveToStep5" class="btn-continue" :disabled="processing">
                         Продолжить переход
                     </button>
-                    <button @click="step = 4" class="btn-secondary ml-4">
+                    <button @click="step = 3" class="btn-secondary ml-4">
                         Назад
                     </button>
                 </div>
             </div>
 
+            <!-- Шаг 5: Управление академическими отпусками -->
+            <div v-if="step === 5">
+                <h3 class="text-lg font-semibold mb-4">Студенты в академическом отпуске</h3>
+
+                <div v-if="loadingAcademicLeaves">Загрузка данных...</div>
+                <div v-else-if="academicLeaveError" class="text-red-500 mb-4">{{ academicLeaveError }}</div>
+                <div v-else>
+                    <div v-if="academicLeaveStudents && academicLeaveStudents.length > 0" class="mb-6 overflow-x-auto">
+                        <table class="min-w-full bg-white">
+                            <thead>
+                                <tr>
+                                    <th class="py-2 px-4 border-b">Студент</th>
+                                    <th class="py-2 px-4 border-b">Группа</th>
+                                    <th class="py-2 px-4 border-b">Курс</th>
+                                    <th class="py-2 px-4 border-b">Действие</th>
+                                    <th class="py-2 px-4 border-b" v-if="showGroupSelection">Новая группа</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="student in academicLeaveStudents" :key="student.student_id">
+                                    <td class="py-2 px-4 border-b">{{ student.full_name }}</td>
+                                    <td class="py-2 px-4 border-b">{{ student.group_number }}</td>
+                                    <td class="py-2 px-4 border-b">{{ student.course_name }}</td>
+                                    <td class="py-2 px-4 border-b">
+                                        <select v-model="student.action" @change="handleAcademicLeaveAction(student)">
+                                            @change="student.new_group_id = null">
+                                            <option value="expel">Отчислить</option>
+                                            <option value="continue">Продолжить обучение</option>
+                                            <option value="extend">Продлить академ</option>
+                                        </select>
+                                    </td>
+                                    <td class="py-2 px-4 border-b"
+                                        v-if="student.action === 'continue' && showGroupSelection">
+                                        <select v-model="student.new_group_id" class="border rounded px-2 py-1">
+                                            <option :value="null">Выберите группу</option>
+                                            <option v-for="group in availableGroups2" :key="group.group_id"
+                                                :value="group.group_id">
+                                                {{ group.group_number }} ({{ group.course_name }})
+                                            </option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div v-else class="mb-6 text-gray-500">
+                        Нет студентов в академическом отпуске
+                    </div>
+
+                    <div class="flex space-x-3">
+                        <button class="btn_admin bg-blue-600" @click="saveAcademicLeaveDecisions">
+                            {{ academicLeaveStudents && academicLeaveStudents.length > 0 ? 'Сохранить решения' :
+                                'Продолжить' }}
+                        </button>
+                        <button class="btn_admin bg-gray-500" @click="step = 4">
+                            Назад
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Шаг 6: Завершение перехода -->
             <div v-if="step === 6">
                 <h3>Завершение перехода на {{ nextYear }} год</h3>
 
-                <!-- Архивация и создание новых связей -->
                 <div class="processing-section" v-if="!showTeacherAssignment">
                     <p>Выполняются финальные приготовления...</p>
                     <div v-if="processingStep6" class="spinner"></div>
                 </div>
 
-                <!-- Назначение преподавателей -->
                 <div v-else-if="showTeacherAssignment" class="teacher-assignment">
                     <h4>Назначение преподавателей на предметы</h4>
 
@@ -331,7 +324,6 @@
                     </div>
                 </div>
             </div>
-
         </main>
 
         <footer class="footer">© 2025 Дипломная работа</footer>
@@ -358,27 +350,28 @@ export default {
             graduateError: null,
             graduatingGroups: [],
 
-            // Для шага 3 (академотпуска)
-            loadingAcademicLeaves: false,
-            academicLeaveError: null,
-            academicLeaveStudents: [],
-            availableGroups2: [], // Добавьте это
-            showGroupSelection: true,
-
-            // Для шага 4 (перевод студентов)
+            // Для шага 3 (перевод студентов)
             loadingContinuingStudents: false,
             continuingStudentsError: null,
             continuingGroups: [],
             availableGroups: [],
 
-            // Для шага 5
+            // Для шага 4 (добавление групп)
             addMethod: 'manual',
             newGroup: {
                 name: '',
-                studentsText: ''
+                studentsText: '',
+                isMaster: false
             },
             excelData: null,
             file: null,
+
+            // Для шага 5 (академотпуска)
+            loadingAcademicLeaves: false,
+            academicLeaveError: null,
+            academicLeaveStudents: [],
+            availableGroups2: [],
+            showGroupSelection: true,
 
             // Для шага 6
             showTeacherAssignment: false,
@@ -400,7 +393,6 @@ export default {
 
     methods: {
         handleAcademicLeaveAction(student) {
-            // Если студент продолжает обучение, показываем выбор группы
             if (student.action === 'continue') {
                 this.showGroupSelection = true;
             } else {
@@ -414,17 +406,12 @@ export default {
 
             try {
                 const token = localStorage.getItem('token');
-
                 const response = await axios.get('https://backend-8qud.onrender.com/api/academic-year/transition-info', {
-                    // const response = await axios.get('http://localhost:3000/api/academic-year/transition-info', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                console.log(response);
-                // const data = await response.json();
 
                 if (response.data.success) {
                     this.currentYear = response.data.data.currentYear;
-                    console.log(this.currentYear);
                     this.nextYear = response.data.data.nextYear;
                     this.currentYearId = response.data.data.currentYearId;
                 } else {
@@ -437,16 +424,10 @@ export default {
                 this.loading = false;
             }
         },
-        async moveToStep6() {
-            this.step = 6;
-            await this.finalizeTransition();
-        },
 
         async startTransition() {
             this.processing = true;
-
             try {
-                // Загружаем данные о выпускниках
                 await this.loadGraduatingStudents();
                 this.step = 2;
             } catch (err) {
@@ -465,11 +446,9 @@ export default {
                 const token = localStorage.getItem('token');
                 const response = await axios.get(
                     `https://backend-8qud.onrender.com/api/academic-year/graduating-students/${this.currentYearId}`,
-                    // `http://localhost:3000/api/academic-year/graduating-students/${this.currentYearId}`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
-                console.log(response);
                 if (response.data.success) {
                     this.graduatingGroups = response.data.data.map(group => ({
                         ...group,
@@ -490,9 +469,8 @@ export default {
         },
 
         async confirmGraduates() {
-            this.processingTransition = true;
+            this.processing = true;
             this.error = null;
-            this.transitionError = null;
 
             try {
                 const token = localStorage.getItem('token');
@@ -502,9 +480,7 @@ export default {
                     .map(s => s.student_id);
 
                 const response = await axios.post(
-
                     'https://backend-8qud.onrender.com/api/academic-year/process-transition',
-                    // 'http://localhost:3000/api/academic-year/process-transition',
                     {
                         currentYearId: this.currentYearId,
                         nextYear: this.nextYear,
@@ -514,23 +490,196 @@ export default {
                 );
 
                 if (response.data.success) {
-                    // Вместо перехода на главную - загружаем следующий шаг
-                    // await this.loadAcademicLeaveStudents();
-
                     await this.loadContinuingStudents();
-
-                    // await this.loadAvailableGroups();
-
-                    this.step = 3; // Переходим к шагу с академотпусками
+                    this.step = 3;
                 } else {
                     this.error = response.data.message || 'Ошибка при обработке выпускников';
                 }
             } catch (err) {
-                this.transitionError = err.response?.data?.message || 'Ошибка при обработке перехода';
+                this.error = err.response?.data?.message || 'Ошибка при обработке перехода';
                 console.error('Ошибка:', err);
             } finally {
-                this.processingTransition = false;
+                this.processing = false;
             }
+        },
+
+        async loadContinuingStudents() {
+            this.loadingContinuingStudents = true;
+            this.continuingStudentsError = null;
+
+            try {
+                const token = localStorage.getItem('token');
+                const studentsRes = await axios.get(
+                    `https://backend-8qud.onrender.com/api/academic-year/students/continuing/${this.currentYearId}`,
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+
+                const groupsRes = await axios.get(
+                    `https://backend-8qud.onrender.com/api/academic-year/groups/available/${this.currentYearId}`,
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+
+                if (studentsRes.data.success && groupsRes.data.success) {
+                    this.continuingGroups = studentsRes.data.data || [];
+                    this.availableGroups = groupsRes.data.data || [];
+
+                    if (this.continuingGroups.length === 0 ||
+                        this.continuingGroups.every(g => !g.students || g.students.length === 0)) {
+                        this.continuingStudentsError = 'Нет студентов для перевода';
+                    } else {
+                        this.continuingGroups.forEach(group => {
+                            if (group.students) {
+                                group.students.forEach(student => {
+                                    student.action = 'continue';
+                                    student.new_group_id = null;
+                                });
+                            }
+                        });
+                    }
+                } else {
+                    this.continuingStudentsError = 'Ошибка при загрузке данных';
+                }
+            } catch (err) {
+                this.continuingStudentsError = err.response?.data?.message || 'Не удалось загрузить данные';
+                console.error('Ошибка:', err);
+            } finally {
+                this.loadingContinuingStudents = false;
+            }
+        },
+
+        async processStudentTransitions() {
+            this.processing = true;
+
+            try {
+                const token = localStorage.getItem('token');
+
+                if (this.continuingGroups.length === 0 ||
+                    this.continuingGroups.every(g => !g.students || g.students.length === 0)) {
+                    this.step = 4;
+                    return;
+                }
+
+                const transitions = this.continuingGroups.flatMap(group =>
+                    group.students.map(student => ({
+                        student_id: student.student_id,
+                        current_group_id: group.group_id,
+                        action: student.action,
+                        new_group_id: student.new_group_id
+                    }))
+                );
+
+                const response = await axios.post(
+                    'https://backend-8qud.onrender.com/api/academic-year/student-processing',
+                    {
+                        currentYearId: this.currentYearId,
+                        nextYear: this.nextYear,
+                        transitions
+                    },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+
+                if (response.data.success) {
+                    this.step = 4;
+                } else {
+                    this.error = response.data.message || 'Ошибка при завершении перехода';
+                }
+            } catch (err) {
+                this.error = err.response?.data?.message || 'Ошибка при завершении перехода';
+                console.error('Ошибка:', err);
+            } finally {
+                this.processing = false;
+            }
+        },
+
+        isValidGroupName(name) {
+            return /^\d{7}\/\d{5}$/.test(name);
+        },
+
+        async handleFileUpload(event) {
+            this.file = event.target.files[0];
+            const formData = new FormData();
+            formData.append('file', this.file);
+
+            try {
+                const response = await axios.post('https://backend-8qud.onrender.com/api/academic-year/groups/parse-excel', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                this.excelData = response.data.data;
+            } catch (err) {
+                alert(err.response?.data?.message || 'Ошибка при обработке файла');
+            }
+        },
+
+        async confirmAllGroups() {
+            const invalidGroups = this.excelData.filter(
+                group => !/^\d{7}\/\d{5}$/.test(group.proposedGroupName))
+                .map(group => group.proposedGroupName);
+
+            if (invalidGroups.length > 0) {
+                alert(
+                    `Ошибка валидации:\n\nНекорректные названия групп:\n${invalidGroups.join('\n')}\n\nФормат: 1234567/12345`
+                );
+                return;
+            }
+
+            this.processing = true;
+            const groupsCount = this.excelData.length;
+
+            try {
+                for (const group of this.excelData) {
+                    await axios.post('https://backend-8qud.onrender.com/api/academic-year/groups/manual', {
+                        groupName: group.proposedGroupName,
+                        students: group.students.map(s => s.full_name),
+                        yearId: this.currentYearId,
+                        isMaster: group.isMaster || false
+                    }, {
+                        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                    });
+                }
+
+                this.excelData = null;
+                if (this.$refs.fileInput) {
+                    this.$refs.fileInput.value = '';
+                }
+
+                alert(`Группы добавлены:\n\nУспешно импортировано ${groupsCount} групп`);
+            } catch (err) {
+                alert(`Ошибка:\n\n${err.response?.data?.message || 'Ошибка при создании групп'}`);
+            } finally {
+                this.processing = false;
+            }
+        },
+
+        async addManualGroup() {
+            const students = this.newGroup.studentsText
+                .split('\n')
+                .map(s => s.trim())
+                .filter(s => s.length > 0);
+
+            try {
+                await axios.post('https://backend-8qud.onrender.com/api/academic-year/groups/manual', {
+                    groupName: this.newGroup.name,
+                    students,
+                    yearId: this.currentYearId,
+                    isMaster: this.newGroup.isMaster
+                }, {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                });
+
+                alert('Группа успешно добавлена!');
+                this.newGroup = { name: '', studentsText: '', isMaster: false };
+            } catch (err) {
+                alert(err.response?.data?.message || 'Ошибка при создании группы');
+            }
+        },
+
+        async moveToStep5() {
+            await this.loadAcademicLeaveStudents();
+            this.step = 5;
         },
 
         async loadAcademicLeaveStudents() {
@@ -544,10 +693,6 @@ export default {
                         `https://backend-8qud.onrender.com/api/academic-year/students/academic-leaves/${this.currentYearId}`,
                         { headers: { Authorization: `Bearer ${token}` } }
                     ),
-                    // axios.get(
-                    //     `https://backend-8qud.onrender.com/api/academic-year/available-groups/${this.currentYearId}`,
-                    //     { headers: { Authorization: `Bearer ${token}` } }
-                    // )
                     axios.get(
                         `https://backend-8qud.onrender.com/api/academic-year/available-groups/${this.currentYearId}`,
                         { headers: { Authorization: `Bearer ${token}` } }
@@ -572,35 +717,6 @@ export default {
             }
         },
 
-        async loadAvailableGroups() {
-            this.loadingAcademicLeaves = true;
-            this.academicLeaveError = null;
-            console.log('старт:')
-
-            try {
-                const token = localStorage.getItem('token');
-                const response = await axios.get(
-                    `https://backend-8qud.onrender.com/api/academic-year/available-groups/${this.currentYearId}`,
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
-
-                console.log('response:')
-                console.log(response);
-
-                console.log('this.availableGroups2:')
-                console.log(this.availableGroups2);
-
-                if (response.data.success) {
-                    this.availableGroups2 = response.data.data;
-                    console.log(this.availableGroups2);
-                }
-            } catch (err) {
-                console.error('Ошибка при загрузке групп:', err);
-            } finally {
-                this.loadingAcademicLeaves = false;
-            }
-        },
-
         async saveAcademicLeaveDecisions() {
             this.processing = true;
 
@@ -608,8 +724,8 @@ export default {
                 const token = localStorage.getItem('token');
 
                 if (!this.academicLeaveStudents || this.academicLeaveStudents.length === 0) {
-                    await this.loadContinuingStudents();
-                    this.step = 4;
+                    await this.finalizeTransition();
+                    this.step = 6;
                     return;
                 }
 
@@ -627,257 +743,14 @@ export default {
                 );
 
                 if (response.data.success) {
-                    // await this.loadContinuingStudents();
-                    // this.step = 4;
-
-                    this.step = 5;
-
+                    await this.finalizeTransition();
+                    this.step = 6;
                 } else {
                     this.academicLeaveError = response.data.message || 'Ошибка при обработке';
                 }
             } catch (err) {
                 this.academicLeaveError = err.response?.data?.message || 'Ошибка при обработке';
                 console.error('Ошибка:', err);
-            } finally {
-                this.processing = false;
-            }
-        },
-
-        async loadContinuingStudents() {
-            this.loadingContinuingStudents = true;
-            this.continuingStudentsError = null;
-
-            try {
-                const token = localStorage.getItem('token');
-
-                // // Загружаем студентов для перевода
-                // const [studentsRes, groupsRes] = await Promise.all([
-                //     axios.get(
-                //         `https://backend-8qud.onrender.com/api/academic-year/students/continuing/${this.currentYearId}`,
-                //         { headers: { Authorization: `Bearer ${token}` } }
-                //     ),
-                //     axios.get(
-                //         `https://backend-8qud.onrender.com/api/academic-year/groups/available/${this.currentYearId}`,
-                //         { headers: { Authorization: `Bearer ${token}` } }
-                //     )
-                // ]);
-
-                // const studentsRes = await this.retryableAxiosRequest(
-                const studentsRes = await axios.get(
-                    `https://backend-8qud.onrender.com/api/academic-year/students/continuing/${this.currentYearId}`,
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
-
-
-                const groupsRes = await axios.get(
-                    `https://backend-8qud.onrender.com/api/academic-year/groups/available/${this.currentYearId}`,
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
-
-                if (studentsRes.data.success && groupsRes.data.success) {
-                    this.continuingGroups = studentsRes.data.data || [];
-                    this.availableGroups = groupsRes.data.data || [];
-
-                    // Если нет студентов для перевода, показываем сообщение
-                    if (this.continuingGroups.length === 0 ||
-                        this.continuingGroups.every(g => !g.students || g.students.length === 0)) {
-                        this.continuingStudentsError = 'Нет студентов для перевода';
-                    } else {
-                        // Инициализируем action для каждого студента
-                        this.continuingGroups.forEach(group => {
-                            if (group.students) {
-                                group.students.forEach(student => {
-                                    student.action = 'expel';
-                                    student.new_group_id = null;
-                                });
-                            }
-                        });
-                    }
-                } else {
-                    this.continuingStudentsError = 'Ошибка при загрузке данных';
-                }
-            } catch (err) {
-                this.continuingStudentsError = err.response?.data?.message || 'Не удалось загрузить данные';
-                console.error('Ошибка:', err);
-            } finally {
-                this.loadingContinuingStudents = false;
-            }
-        },
-
-        async processStudentTransitions() {
-            this.processingTransition = true;
-
-            try {
-                const token = localStorage.getItem('token');
-
-                // Если нет студентов для перевода, просто переходим дальше
-                if (this.continuingGroups.length === 0 ||
-                    this.continuingGroups.every(g => !g.students || g.students.length === 0)) {
-                    this.step = 5;
-                    return;
-                }
-
-                const transitions = this.continuingGroups.flatMap(group =>
-                    group.students.map(student => ({
-                        student_id: student.student_id,
-                        current_group_id: group.group_id,
-                        action: student.action,
-                        new_group_id: student.new_group_id
-                    }))
-                );
-
-                const response = await axios.post(
-                    'https://backend-8qud.onrender.com/api/academic-year/student-processing',
-                    {
-                        currentYearId: this.currentYearId,
-                        nextYear: this.nextYear,
-                        transitions
-                    },
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
-
-                if (response.data.success) {
-                    // this.step = 5;
-
-                    await this.loadAcademicLeaveStudents();
-                    this.step = 4;
-
-                } else {
-                    this.transitionError = response.data.message || 'Ошибка при завершении перехода';
-                }
-            } catch (err) {
-                this.transitionError = err.response?.data?.message || 'Ошибка при завершении перехода';
-                console.error('Ошибка:', err);
-                this.step = 4;
-            } finally {
-                this.processingTransition = false;
-            }
-        },
-
-        isValidGroupName(name) {
-            return /^\d{7}\/\d{5}$/.test(name);
-        },
-
-        async handleFileUpload(event) {
-            this.file = event.target.files[0];
-            const formData = new FormData();
-            formData.append('file', this.file);
-
-            try {
-                const response = await axios.post('https://backend-8qud.onrender.com/api/academic-year/groups/parse-excel', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
-
-                this.excelData = response.data.data;
-                this.currentGroupIndex = 0; // Начинаем с первой группы
-            } catch (err) {
-                alert(err.response?.data?.message || 'Ошибка при обработке файла');
-            }
-        },
-        // nextGroup() {
-        //     if (this.currentGroupIndex < this.excelData.length - 1) {
-        //         this.currentGroupIndex++;
-        //     }
-        // },
-        // prevGroup() {
-        //     if (this.currentGroupIndex > 0) {
-        //         this.currentGroupIndex--;
-        //     }
-        // },
-        async confirmAllGroups() {
-            // Проверяем валидность всех названий групп перед отправкой
-            const invalidGroups = this.excelData.filter(
-                group => !/^\d{7}\/\d{5}$/.test(group.proposedGroupName))
-                .map(group => group.proposedGroupName);
-
-            if (invalidGroups.length > 0) {
-                alert(
-                    `Ошибка валидации:\n\nНекорректные названия групп:\n${invalidGroups.join('\n')}\n\nФормат: 1234567/12345`
-                );
-                return;
-            }
-
-            this.processing = true;
-            const groupsCount = this.excelData.length; // Сохраняем количество групп до очистки
-
-            try {
-                for (const group of this.excelData) {
-                    await axios.post('https://backend-8qud.onrender.com/api/academic-year/groups/manual', {
-                        groupName: group.proposedGroupName,
-                        students: group.students.map(s => s.full_name),
-                        yearId: this.currentYearId,
-                        isMaster: group.isMaster || false // Добавляем флаг магистратуры
-                    }, {
-                        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-                    });
-                }
-
-                this.excelData = null;
-                if (this.$refs.fileInput) {
-                    this.$refs.fileInput.value = '';
-                }
-
-                alert(
-                    `Группы добавлены:\n\nУспешно импортировано ${groupsCount} групп`
-                );
-            } catch (err) {
-                alert(
-                    `Ошибка:\n\n${err.response?.data?.message || 'Ошибка при создании групп'}`
-                );
-            }
-
-
-            finally {
-                this.processing = false;
-            }
-        },
-
-        async addManualGroup() {
-            const students = this.newGroup.studentsText
-                .split('\n')
-                .map(s => s.trim())
-                .filter(s => s.length > 0);
-
-            try {
-                await axios.post('https://backend-8qud.onrender.com/api/academic-year/groups/manual', {
-                    groupName: this.newGroup.name,
-                    students,
-                    yearId: this.currentYearId,
-                    isMaster: this.newGroup.isMaster // Добавляем флаг магистратуры
-                }, {
-                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-                });
-
-                alert('Группа успешно добавлена!');
-                this.newGroup = { name: '', studentsText: '', isMaster: false };
-            } catch (err) {
-                alert(err.response?.data?.message || 'Ошибка при создании группы');
-            }
-        },
-
-        async confirmExcelGroup() {
-            try {
-                this.processing = true;
-                await axios.post('https://backend-8qud.onrender.com/api/academic-year/groups/manual', {
-                    groupName: this.excelData.proposedGroupName,
-                    students: this.excelData.students.map(s => s.full_name),
-                    yearId: this.currentYearId
-                }, {
-                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-                });
-
-                this.excelData = null;
-                this.$refs.fileInput.value = '';
-                alert('Группа добавлена:\n\nСтуденты успешно импортированы');
-
-
-            } catch (err) {
-                alert(
-                    `Ошибка:\n\n${err.response?.data?.message || 'Ошибка при создании группы'}`
-                );
             } finally {
                 this.processing = false;
             }
@@ -897,17 +770,10 @@ export default {
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
-                console.log(response);
-
                 if (response.data.success) {
                     this.teachers = response.data.data.teachers;
-                    console.log(this.teachers);
-
                     this.subjects = response.data.data.subjects;
-                    console.log(this.subjects);
-
-                    this.loadGroupSubjects();
-
+                    await this.loadGroupSubjects();
                     this.showTeacherAssignment = true;
                 }
             } catch (err) {
@@ -922,16 +788,11 @@ export default {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
             this.groupSubjects = response.data.data;
-            console.log(this.groupSubjects);
-        },
 
-        getGroupsForSubject(subjectId) {
-            return this.groupSubjects.filter(gs =>
-                gs.subject_id === subjectId
-            ).map(gs => ({
-                group_subject_id: gs.group_subject_id,
-                group_number: gs.group_number
-            }));
+            // Инициализируем teacherAssignments
+            this.groupSubjects.forEach(gs => {
+                this.teacherAssignments[gs.group_subject_id] = gs.teacher_id || '';
+            });
         },
 
         async submitTeacherAssignments() {
@@ -948,20 +809,11 @@ export default {
                     { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
                 );
 
-                // 2. Добавляем пустые оценки для всех студентов
                 await axios.post(
                     'https://backend-8qud.onrender.com/api/academic-year/grades/initialize',
                     { yearId: this.currentYearId },
                     { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
                 );
-
-                // 3. Завершаем переход
-                // this.$notify({
-                //     type: 'success',
-                //     title: 'Переход завершен',
-                //     text: 'Новый учебный год успешно активирован'
-                // });
-                // this.$router.push('/admin');
 
                 alert('Переход на новый учебный год успешно завершен!');
                 this.$router.push('/admin');
@@ -969,7 +821,6 @@ export default {
                 console.error(err);
             }
         },
-
 
         logout() {
             localStorage.removeItem('token');
