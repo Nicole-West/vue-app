@@ -668,6 +668,7 @@ export default {
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
+
                 const groupsRes = await axios.get(
                     `https://backend-8qud.onrender.com/api/academic-year/groups/available/${this.currentYearId}`,
                     { headers: { Authorization: `Bearer ${token}` } }
