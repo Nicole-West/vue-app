@@ -50,9 +50,9 @@
                         <button class="btn_admin bg-blue-600" @click="confirmGraduates">
                             Подтвердить выпуск
                         </button>
-                        <!-- <button class="btn_admin bg-gray-500" @click="step = 1">
+                        <button class="btn_admin bg-gray-500" @click="step = 1">
                             Назад
-                        </button> -->
+                        </button>
                     </div>
                 </div>
             </div>
@@ -96,9 +96,9 @@
                         <button class="btn_admin bg-blue-600" @click="processStudentTransitions">
                             Подтвердить перевод
                         </button>
-                        <!-- <button class="btn_admin bg-gray-500" @click="step = 2">
+                        <button class="btn_admin bg-gray-500" @click="step = 2">
                             Назад
-                        </button> -->
+                        </button>
                     </div>
                 </div>
             </div>
@@ -195,9 +195,9 @@
                     <button @click="moveToStep5" class="btn-continue" :disabled="processing">
                         Продолжить переход
                     </button>
-                    <!-- <button @click="step = 3" class="btn-secondary ml-4">
+                    <button @click="step = 3" class="btn-secondary ml-4">
                         Назад
-                    </button> -->
+                    </button>
                 </div>
             </div>
 
@@ -256,9 +256,9 @@
                             {{ academicLeaveStudents && academicLeaveStudents.length > 0 ? 'Сохранить решения' :
                                 'Продолжить' }}
                         </button>
-                        <!-- <button class="btn_admin bg-gray-500" @click="step = 4">
+                        <button class="btn_admin bg-gray-500" @click="step = 4">
                             Назад
-                        </button> -->
+                        </button>
                     </div>
                 </div>
             </div>
@@ -316,9 +316,9 @@
                             </span>
                             <span v-else>Завершить переход на {{ nextYear }} год</span>
                         </button>
-                        <!-- <button @click="step = 5" class="btn-secondary ml-4">
+                        <button @click="step = 5" class="btn-secondary ml-4">
                             Назад
-                        </button> -->
+                        </button>
 
                         <div v-if="error" class="error-message">{{ error }}</div>
                     </div>
