@@ -576,6 +576,9 @@ export default {
                 console.log('response:')
                 console.log(response);
 
+                console.log('this.availableGroups2:')
+                console.log(this.availableGroups2);
+
                 if (response.data.success) {
                     this.availableGroups2 = response.data.data;
                     console.log(this.availableGroups2);
