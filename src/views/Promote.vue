@@ -515,8 +515,8 @@ export default {
 
                 if (response.data.success) {
                     // Вместо перехода на главную - загружаем следующий шаг
-                    // await this.loadAcademicLeaveStudents();
-                    await this.loadAvailableGroups();
+                    await this.loadAcademicLeaveStudents();
+                    // await this.loadAvailableGroups();
 
                     this.step = 3; // Переходим к шагу с академотпусками
                 } else {
@@ -541,6 +541,10 @@ export default {
                         `https://backend-8qud.onrender.com/api/academic-year/students/academic-leaves/${this.currentYearId}`,
                         { headers: { Authorization: `Bearer ${token}` } }
                     ),
+                    // axios.get(
+                    //     `https://backend-8qud.onrender.com/api/academic-year/available-groups/${this.currentYearId}`,
+                    //     { headers: { Authorization: `Bearer ${token}` } }
+                    // )
                     axios.get(
                         `https://backend-8qud.onrender.com/api/academic-year/available-groups/${this.currentYearId}`,
                         { headers: { Authorization: `Bearer ${token}` } }
@@ -568,6 +572,7 @@ export default {
         async loadAvailableGroups() {
             this.loadingAcademicLeaves = true;
             this.academicLeaveError = null;
+            console.log('старт:')
 
             try {
                 const token = localStorage.getItem('token');
