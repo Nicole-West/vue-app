@@ -557,7 +557,7 @@ export default {
                         action: 'extend',
                         new_group_id: null
                     }));
-                    this.availableGroups = groupsRes.data.data;
+                    this.availableGroups2 = groupsRes.data.data;
                 } else {
                     this.academicLeaveError = studentsRes.data.message || 'Ошибка при загрузке данных';
                 }
