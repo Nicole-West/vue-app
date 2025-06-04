@@ -566,6 +566,9 @@ export default {
         },
 
         async loadAvailableGroups() {
+            this.loadingAcademicLeaves = true;
+            this.academicLeaveError = null;
+
             try {
                 const token = localStorage.getItem('token');
                 const response = await axios.get(
@@ -585,6 +588,8 @@ export default {
                 }
             } catch (err) {
                 console.error('Ошибка при загрузке групп:', err);
+            } finally {
+                this.loadingAcademicLeaves = false;
             }
         },
 
