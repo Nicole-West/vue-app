@@ -571,6 +571,7 @@ export default {
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
+                console.log('response:')
                 console.log(response);
 
                 if (response.data.success) {
