@@ -515,7 +515,10 @@ export default {
 
                 if (response.data.success) {
                     // Вместо перехода на главную - загружаем следующий шаг
-                    await this.loadAcademicLeaveStudents();
+                    // await this.loadAcademicLeaveStudents();
+
+                    await this.loadContinuingStudents();
+
                     // await this.loadAvailableGroups();
 
                     this.step = 3; // Переходим к шагу с академотпусками
@@ -624,8 +627,11 @@ export default {
                 );
 
                 if (response.data.success) {
-                    await this.loadContinuingStudents();
-                    this.step = 4;
+                    // await this.loadContinuingStudents();
+                    // this.step = 4;
+
+                    this.step = 5;
+
                 } else {
                     this.academicLeaveError = response.data.message || 'Ошибка при обработке';
                 }
@@ -730,7 +736,11 @@ export default {
                 );
 
                 if (response.data.success) {
-                    this.step = 5;
+                    // this.step = 5;
+
+                    await this.loadAcademicLeaveStudents();
+                    this.step = 4;
+
                 } else {
                     this.transitionError = response.data.message || 'Ошибка при завершении перехода';
                 }
